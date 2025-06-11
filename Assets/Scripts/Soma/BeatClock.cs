@@ -1,6 +1,7 @@
 using UnityEngine;
 using UniRx;
 using System;
+using UnityEngine.UI;
 
 
 public class BeatClock : MonoBehaviour
@@ -9,6 +10,7 @@ public class BeatClock : MonoBehaviour
     public IObservable<int> OnBeat => beatSubject;
 
     private int currentBeat = 0;
+    [SerializeField] private Text beatText;
     [SerializeField] private float bpm = 120f;
     void Start()
     {
@@ -16,9 +18,14 @@ public class BeatClock : MonoBehaviour
         Observable.Interval(TimeSpan.FromSeconds(interval))
             .Subscribe(_ =>
             {
+                currentBeat = (currentBeat % 16) + 1;
                 beatSubject.OnNext(currentBeat);
                 Debug.Log($"Beat: {currentBeat}");
-                currentBeat = (currentBeat + 1) % 16;
+
+                if (beatText != null)
+                {
+                    beatText.text = $"Beat: {currentBeat}";
+                }
             })
             .AddTo(this);
     }
