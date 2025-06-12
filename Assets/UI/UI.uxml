@@ -1,0 +1,9 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/UI.uss?fileID=7433441132597879392&amp;guid=1c2ae0aa6a908834b8a0cf4b94eb3bea&amp;type=3#UI" />
+    <ui:VisualElement name="debug-ui" class="hud-info" style="flex-grow: 1; width: 220px;">
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-between;">
+            <ui:Label text="Current Beat" />
+            <ui:Label text="9" name="currentbeat-label" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

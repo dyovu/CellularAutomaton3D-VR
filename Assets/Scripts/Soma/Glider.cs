@@ -9,9 +9,11 @@ public class Glider : MonoBehaviour
     [SerializeField] private Color emissionColor = Color.white;
     [SerializeField] private float emissionMaxIntensity = 2f;
     [SerializeField] private float fadeDuration = 0.5f;
+    [SerializeField] private AudioClip se;
 
     private BeatClock clock;
     private Material _material;
+    private AudioSource _audioSource;
 
     private void Start()
     {
@@ -25,7 +27,7 @@ public class Glider : MonoBehaviour
         {
             Debug.LogError("BeatClock not found in the scene. Please ensure it is present.");
         }
-
+        _audioSource = GetComponent<AudioSource>();
     }
     public void Initialize(BeatClock clock)
     {
@@ -39,6 +41,8 @@ public class Glider : MonoBehaviour
     {
         // Implement the reaction to the beat here
         Debug.Log($"Glider_A reacting to beat {triggerBeats}");
+
+        PlaySE();
 
         // 光らせた後フェードアウト
          _material.EnableKeyword("_EMISSION");
@@ -58,6 +62,15 @@ public class Glider : MonoBehaviour
                 _material.DisableKeyword("_EMISSION");
             })
             .AddTo(this);
+    }
+
+    private void PlaySE()
+    {
+        // サウンドを再生
+        if (_audioSource != null)
+        {
+            _audioSource.PlayOneShot(se);
+        }
     }
 
 
