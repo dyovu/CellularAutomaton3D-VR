@@ -831,8 +831,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   triggerBeats: 0800000010000000
-  flashColor: {r: 1, g: 1, b: 1, a: 1}
-  flashDuration: 0.2
+  emissionColor: {r: 1, g: 1, b: 1, a: 1}
+  emissionMaxIntensity: 2
+  fadeDuration: 0.5
 --- !u!1 &1336652999
 GameObject:
   m_ObjectHideFlags: 0
@@ -949,7 +950,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
