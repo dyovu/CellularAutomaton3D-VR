@@ -45,13 +45,13 @@ public class Glider : MonoBehaviour
         Debug.Log($"Glider_A reacting to beat {triggerBeats}");
 
          // 光る
-        if (rend != null)
-        {
-            rend.material.color = flashColor;
+        // if (rend != null)
+        // {
+        //     rend.material.color = flashColor;
 
-            Observable.Timer(TimeSpan.FromSeconds(flashDuration))
-                .Subscribe(_ => rend.material.color = originalColor)
-                .AddTo(this);
-        }
+        //     Observable.Timer(TimeSpan.FromSeconds(flashDuration))
+        //         .Subscribe(_ => rend.material.color = originalColor)
+        //         .AddTo(this);
+        // }
     }
 }
