@@ -35,6 +35,16 @@ public class CameraMove : MonoBehaviour
         Vector3 movement = transform.right * moveHorizontal + transform.forward * moveVertical;
         transform.position += movement * speed * Time.deltaTime;
 
+        // qキーと eキーで上下移動
+        if (Input.GetKey(KeyCode.Q))
+        {
+            transform.position += Vector3.up * speed * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            transform.position += Vector3.down * speed * Time.deltaTime;
+        }
+
         // ESCキーでマウスカーソル解除
         if (Input.GetKeyDown(KeyCode.Escape))
         {
