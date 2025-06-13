@@ -59,11 +59,52 @@ public partial class ToroidalBoundsCellulerAutomaton : MonoBehaviour
         {
             rotatedPattern[i+1] = RotatePattern(basePos, basePattern[i], direction);
         }
-        
         SetCells(rotatedPattern);
     }
 
-    Vector3Int RotatePattern(Vector3Int basePos, Vector3Int original, int direction)
+    void PlaceBays(int centerX, int centerY, int centerZ, int direction = 0)
+    {
+        Vector3Int basePos = new Vector3Int(centerX, centerY, centerZ);
+
+        Vector3Int[] basePattern = new Vector3Int[]
+        {
+            
+            // y=0平面（基準平面）
+            new Vector3Int(0, 0, 0),
+            new Vector3Int(1, 0, 0),
+            new Vector3Int(0, 0, 1),
+            new Vector3Int(1, 0, 1),
+            new Vector3Int(0, 0, 2),
+            new Vector3Int(1, 0, 2),
+            // y=1平面
+            new Vector3Int(0, 1, 1),
+            new Vector3Int(1, 1, 1),
+
+            // y=-1平面
+            new Vector3Int(0, -1, 0),
+            new Vector3Int(1, -1, 0),
+            // y=-2平面
+            new Vector3Int(0, -2, 1),
+            new Vector3Int(0, -2, 2),
+            new Vector3Int(1, -2, 1),
+            new Vector3Int(1, -2, 2),
+            // y=-3平面
+            new Vector3Int(0, -3, 2),
+            new Vector3Int(1, -3, 2),
+        };
+
+        Vector3Int[] rotatedPattern = new Vector3Int[basePattern.Length + 1];
+        rotatedPattern[0] = RotatePattern(basePos, Vector3Int.zero, direction);
+        for (int i = 0; i < basePattern.Length; i++)
+        {
+            rotatedPattern[i + 1] = RotatePattern(basePos, basePattern[i], direction);
+        }
+        SetCells(rotatedPattern);
+    }
+
+
+    // directionによってy軸並行でbasePosを中心にパターンを回転させる
+    Vector3Int RotatePattern(Vector3Int basePos, Vector3Int original, int direction = 0)
     {
         int x = basePos.x + original.x;
         int y = basePos.y + original.y;  
@@ -85,8 +126,8 @@ public partial class ToroidalBoundsCellulerAutomaton : MonoBehaviour
                 rotatedZ = relativeZ;
                 break;
             case 1: 
-                rotatedX = relativeZ;
-                rotatedZ = -relativeX;
+                rotatedX = relativeX;
+                rotatedZ = relativeZ; 
                 break;
             case 2: 
                 rotatedX = -relativeX;
@@ -97,8 +138,8 @@ public partial class ToroidalBoundsCellulerAutomaton : MonoBehaviour
                 rotatedZ = relativeX;
                 break;
             default:
-                rotatedX = relativeX;
-                rotatedZ = relativeZ;
+                rotatedX = relativeZ;
+                rotatedZ = -relativeX;
                 break;
         }
         

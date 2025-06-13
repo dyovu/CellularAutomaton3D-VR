@@ -103,10 +103,12 @@ public partial class ToroidalBoundsCellulerAutomaton : MonoBehaviour
             }
         }
 
-        PlaceGlider(15, 0, 15, 2);
-        PlaceGlider(15, 5, 15, 3);
-        PlaceGlider(15, 10, 15, 0);
-        PlaceGlider(15, 15, 15, 1);
+        // PlaceGlider(15, 0, 15, 2);
+        // PlaceGlider(15, 5, 15, 3);
+        // PlaceGlider(15, 10, 15, 0);
+        // PlaceGlider(15, 15, 15, 1);
+
+        PlaceBays(15, 20, 15, 0);
     }
 
     // Star
