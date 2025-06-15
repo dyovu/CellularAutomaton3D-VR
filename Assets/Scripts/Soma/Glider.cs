@@ -40,7 +40,7 @@ public class Glider : MonoBehaviour
     private void ReactToBeat()
     {
         // Implement the reaction to the beat here
-        Debug.Log($"Glider_A reacting to beat {triggerBeats}");
+        // Debug.Log($"Glider_A reacting to beat {triggerBeats}");
 
         PlaySE();
 
