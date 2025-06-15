@@ -24,9 +24,15 @@ public static class SpaceShipConstants
         LeftBackward,
         LeftForward
     }
+    
+    public struct NextCellsInfo
+    {
+        public HashSet<Vector3Int> AllCells { get; set; }
+        public Dictionary<Vector3Int, List<int>> Collisions { get; set; }
+    }
 
     // readonly staticで不変性を保証
-    public static readonly Dictionary<GliderPhase, HashSet<Vector3Int>> GliderOffsets = 
+    public static readonly Dictionary<GliderPhase, HashSet<Vector3Int>> GliderOffsets =
         new Dictionary<GliderPhase, HashSet<Vector3Int>>()
         {
             {GliderPhase.Phase1, new HashSet<Vector3Int>

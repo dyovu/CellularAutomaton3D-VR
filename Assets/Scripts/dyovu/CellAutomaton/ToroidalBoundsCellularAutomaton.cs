@@ -6,7 +6,7 @@ using static SpaceShipConstants;
 
 
 // ToroidalBoundsCellulerAutomaton - Grid操作を集約
-public partial class ToroidalBoundsCellulerAutomaton : MonoBehaviour
+public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
 {
     [SerializeField] GameObject cubePrefab;
     [SerializeField] int width = 30;
@@ -90,11 +90,16 @@ public partial class ToroidalBoundsCellulerAutomaton : MonoBehaviour
         // 現在のセルを非アクティブに
         DeactivateCurrentCells();
 
-        // 次世代のセル位置を取得
-        HashSet<Vector3Int> nextCells = spaceShipsManager.GetNextGenerationCells();
+        // 次世代のセル位置と衝突しているグライダーの座標とIDを取得
+        NextCellsInfo nextCellsInfo = spaceShipsManager.GetNextGenerationWithCollisions();
+
+        HashSet<Vector3Int> nextCells = nextCellsInfo.AllCells;
+        Dictionary<Vector3Int, List<int>> collisions = nextCellsInfo.Collisions;
 
         // 新しいセルをアクティブに
         ActivateCells(nextCells);
+        RemoveCollidedSpaceShips(collisions);
+        // 現在のアクティブセルを更新
 
         currentActiveCells = nextCells;
     }
@@ -121,6 +126,28 @@ public partial class ToroidalBoundsCellulerAutomaton : MonoBehaviour
             }
         }
         currentActiveCells = cells; 
+    }
+
+    void RemoveCollidedSpaceShips(Dictionary<Vector3Int, List<int>> collisions)
+    {
+        foreach (var collision in collisions)
+        {
+            Vector3Int cell = collision.Key;
+            List<int> spaceShipIDs = collision.Value;
+
+            // ここで衝突したスペースシップを削除
+            foreach (int id in spaceShipIDs)
+            {
+                spaceShipsManager.RemoveSpaceShip(id);
+                Debug.Log($"SpaceShip with ID {id} has been removed due to collision at cell {cell}.");
+            }
+
+            // セルを非アクティブにする
+            if (GRID.TryGetValue(cell, out GameObject cube))
+            {
+                StartCoroutine(AnimateScale(cube, Vector3.one, Vector3.zero, () => cube.SetActive(false)));
+            }
+        }
     }
 
 
