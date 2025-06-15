@@ -527,7 +527,7 @@ MonoBehaviour:
   width: 30
   height: 30
   depth: 30
-  stepInterval: 2
+  stepInterval: 0.3
   animationDuration: 0.1
 --- !u!4 &1903441912
 Transform:
