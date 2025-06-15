@@ -6,8 +6,14 @@ public class GridHoverHighlighter : MonoBehaviour
     [SerializeField] private Transform cubePlane; // スケール(6,1,6)のCube
     [SerializeField] private Transform highlightPrefab;
     [SerializeField] private RayInteractor rayInteractor;
-    [SerializeField] private int gridSize = 6;
+    // [SerializeField] private int gridSize = 6;
 
+    private int gridSize;
+
+    private void Start()
+    {
+        gridSize = (int)cubePlane.localScale.x;
+    }
     private void Update()
     {
         if (rayInteractor.CollisionInfo.HasValue)
@@ -30,15 +36,15 @@ public class GridHoverHighlighter : MonoBehaviour
 
             float cellSize = 1f / gridSize;
 
-            float localX = -0.5f + (gridX + 0.5f) * cellSize;
-            float localZ = -0.5f + (gridZ + 0.5f) * cellSize;
+            float snappedX = -0.5f + (gridX + 0.5f) * cellSize;
+            float snappedZ = -0.5f + (gridZ + 0.5f) * cellSize;
 
 
             // グリッドサイズに応じてスケールを調整
             Vector3 planeScale = cubePlane.localScale;
             highlightPrefab.localScale = new Vector3(1f / planeScale.x, 0.01f, 1f / planeScale.z); // ハイライトのスケールを設定
 
-            highlightPrefab.localPosition = new Vector3(localX, 0.5f, localZ);
+            highlightPrefab.localPosition = new Vector3(snappedX, 0.5f, snappedZ);
 
             highlightPrefab.gameObject.SetActive(true);
         }

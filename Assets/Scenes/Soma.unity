@@ -4466,7 +4466,6 @@ MonoBehaviour:
   cubePlane: {fileID: 651387053}
   highlightPrefab: {fileID: 1469116916}
   rayInteractor: {fileID: 1550888406}
-  gridSize: 6
 --- !u!114 &651387047
 MonoBehaviour:
   m_ObjectHideFlags: 0
