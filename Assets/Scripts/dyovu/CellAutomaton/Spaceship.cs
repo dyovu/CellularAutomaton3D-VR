@@ -4,6 +4,7 @@ using System.Linq;
 
 using static SpaceShipConstants;
 using static GridUtils;
+using UnityEngine.PlayerLoop;
 
 public class Spaceship
 {
@@ -28,7 +29,7 @@ public class Spaceship
     public Vector3Int CenterPosition { get { return centerCell; } }
     public SpaceShipsType Type { get { return spaceShipsType; } }
 
-    public Vector3Int[] UpdatePhase() // 次の世代のセルを更新してその配列を返す
+    public void UpdatePhase() // 次の世代のセルを更新してその配列を返す
     {
         switch (phase)
         {
@@ -50,14 +51,14 @@ public class Spaceship
                 phase = GliderPhase.Phase1;
                 break;
         }
+        AdjustPosition(centerCell); // トーラス境界を考慮して位置調整
         generation++;
-        return UpdateCells();
     }
 
-    private Vector3Int[] UpdateCells()
+    public Vector3Int[] GetCurrentPhaseCells()
     {
         HashSet<Vector3Int> offsets = GliderOffsets[phase];
-        Vector3Int[] nextGenerationCells = new Vector3Int[offsets.Count * 2];
+        Vector3Int[] currentGenerationCells = new Vector3Int[offsets.Count * 2];
 
         foreach (var (offset, index) in offsets.Select((value, index) => (value, index)))
         {
@@ -65,12 +66,13 @@ public class Spaceship
             {
                 Vector3Int ofset_cell = new Vector3Int(offset.x, i, offset.z);
                 Vector3Int rotatedCell = RotateCells(ofset_cell);
-                nextGenerationCells[index * 2 + i] = AdjustPosition(rotatedCell);
+                currentGenerationCells[index * 2 + i] = AdjustPosition(rotatedCell);
             }
         }
-        return nextGenerationCells;
+        return currentGenerationCells;
     }
 
+    // トーラス境界を考慮して調整したセルの位置を返す
     private Vector3Int RotateCells(Vector3Int offset_cell)
     {
         switch (direction)
@@ -87,6 +89,8 @@ public class Spaceship
                 return new Vector3Int(centerCell.x + offset_cell.x, centerCell.y + offset_cell.y, centerCell.z + offset_cell.z);
         }
     }
+
+    // トーラス境界を考慮して中心セルのオフセットを返す
     private Vector3Int RotateCenterOffset(Vector3Int centerOffset)
     {
         switch (direction)

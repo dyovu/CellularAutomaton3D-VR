@@ -34,10 +34,14 @@ public partial class ToroidalBoundsCellulerAutomaton : MonoBehaviour
 
     void Start()
     {
+        spaceShipsManager = new SpaceShipsManager();
+        GridUtils.SetGridSize(new Vector3Int(width, height, depth));
+        // ここで全てのセルを非アクティブでinstantiateして初期化している
         InitializeGrid();
-        GridUtils.SetGridSize(new Vector3Int(width, height, depth)); 
-        spaceShipsManager = new SpaceShipsManager(new Vector3Int(width, height, depth));
-        SetupInitialSpaceShips();
+        // 初期セルをアクティブに変更
+        HashSet<Vector3Int> InitialCells = SetupInitialSpaceShips();
+        ActivateCells(InitialCells);
+
         StartCoroutine(StepRoutine());
     }
 
@@ -61,12 +65,15 @@ public partial class ToroidalBoundsCellulerAutomaton : MonoBehaviour
         }
     }
 
-    void SetupInitialSpaceShips()
+    HashSet<Vector3Int> SetupInitialSpaceShips()
     {
+        HashSet<Vector3Int> initialCells = new HashSet<Vector3Int>();
         foreach (var config in initialSpaceShips)
         {
-            spaceShipsManager.CreateSpaceShip(config.position, config.direction);
+            Vector3Int[] initialCell = spaceShipsManager.CreateSpaceShip(config.position, config.direction);
+            initialCells.UnionWith(initialCell);
         }
+        return initialCells;
     }
 
     IEnumerator StepRoutine()
@@ -113,6 +120,7 @@ public partial class ToroidalBoundsCellulerAutomaton : MonoBehaviour
                 StartCoroutine(AnimateScale(cube, Vector3.zero, Vector3.one));
             }
         }
+        currentActiveCells = cells; 
     }
 
 
