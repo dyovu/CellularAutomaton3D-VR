@@ -19,14 +19,14 @@ public class GridHoverHighlighter : MonoBehaviour
         if (rayInteractor.CollisionInfo.HasValue)
         {
             Vector3 hitPoint = rayInteractor.CollisionInfo.Value.Point;
-            Debug.Log($"[debug]Hit Point: {hitPoint}");
+            // Debug.Log($"[debug]Hit Point: {hitPoint}");
 
             Vector3 localPoint = cubePlane.InverseTransformPoint(hitPoint); // (-0.5 ~ 0.5)
             Debug.Log($"[debug]Local Point: {localPoint}");
 
 
             Vector3 scaledSize = cubePlane.lossyScale; // cubePlaneのXZのscaleが6,6だとしたら(6, _, 6)
-            Debug.Log($"[debug]Scaled Size: {scaledSize}");
+            // Debug.Log($"[debug]Scaled Size: {scaledSize}");
 
             float normalizedX = localPoint.x + 0.5f; // 0 ~ 1
             int gridX = Mathf.Clamp(Mathf.FloorToInt(normalizedX * gridSize), 0, gridSize - 1);
@@ -39,6 +39,12 @@ public class GridHoverHighlighter : MonoBehaviour
             float snappedX = -0.5f + (gridX + 0.5f) * cellSize;
             float snappedZ = -0.5f + (gridZ + 0.5f) * cellSize;
 
+            if (OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
+            {
+                Debug.Log($"[TRIGGER] Glider placement at local (X: {snappedX}, Z: {snappedZ})");
+                Vector3 snappedWorldPos = cubePlane.TransformPoint(new Vector3(snappedX, 0f, snappedZ));
+                Debug.Log($"[TRIGGER] Glider placement at world position: {snappedWorldPos}");
+            }
 
             // グリッドサイズに応じてスケールを調整
             Vector3 planeScale = cubePlane.localScale;
