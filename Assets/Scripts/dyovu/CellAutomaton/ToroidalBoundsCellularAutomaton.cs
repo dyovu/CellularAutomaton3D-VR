@@ -72,7 +72,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         HashSet<Vector3Int> initialCells = new HashSet<Vector3Int>();
         foreach (var config in initialSpaceships)
         {
-            Vector3Int[] initialCell = SpaceshipsManager.CreateSpaceship(config.position, config.direction, config.phase);
+            Vector3Int[] initialCell = SpaceshipsManager.CreateGlider(config.position, config.direction, config.phase);
             initialCells.UnionWith(initialCell);
         }
         return initialCells;
@@ -93,7 +93,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         DeactivateCurrentCells();
 
         // 次世代のセル位置と衝突しているグライダーの座標とIDを取得
-        CellsInfo nextCellsInfo = SpaceshipsManager.GetNextGenerationWithCollisions();
+        GliderInfo nextCellsInfo = SpaceshipsManager.GetNextGenerationWithCollisions();
 
         HashSet<Vector3Int> nextCells = nextCellsInfo.AllCells;
         Dictionary<Vector3Int, List<int>> collisions = nextCellsInfo.Collisions;
@@ -137,7 +137,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         HashSet<Vector3Int> activeCells = new HashSet<Vector3Int>();
         foreach (var (id, cell) in cells)
         {
-            Color col = SpaceshipsManager.GetActiveSpaceships()[id].Color;
+            Color col = SpaceshipsManager.GetActiveGliders()[id].Color;
             activeCells.UnionWith(cell);
             Debug.Log($"Activating cells for Spaceship ID {id} with color {col}");
             foreach (Vector3Int position in cell)
@@ -197,7 +197,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
             // ここで衝突したスペースシップを削除
             foreach (int id in SpaceshipIDs)
             {
-                SpaceshipsManager.RemoveSpaceship(id);
+                SpaceshipsManager.RemoveGlider(id);
                 Debug.Log($"Spaceship with ID {id} has been removed due to collision at cell {cell}.");
             }
 

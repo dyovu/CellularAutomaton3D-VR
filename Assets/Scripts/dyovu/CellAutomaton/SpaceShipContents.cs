@@ -25,7 +25,7 @@ public static class SpaceshipConstants
         LeftForward
     }
 
-    public struct CellsInfo
+    public struct GliderInfo
     {
         public HashSet<Vector3Int> AllCells { get; set; }
         public Dictionary<Vector3Int, List<int>> Collisions { get; set; }

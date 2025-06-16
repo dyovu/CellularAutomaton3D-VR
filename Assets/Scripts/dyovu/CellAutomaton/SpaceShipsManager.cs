@@ -3,78 +3,78 @@ using System.Collections.Generic;
 using System.Linq;
 
 using static SpaceshipConstants;
+using dyovu.Glider;
 
-
-// SpaceshipsManager - Unity依存を完全に除去
+// GlidersManager - Unity依存を完全に除去
 public class SpaceshipsManager
 {
-    private int nextSpaceshipID = 0;
-    private Dictionary<int, Spaceship> activeSpaceships;
+    private int nextGliderID = 0;
+    private Dictionary<int, Glider> activeGliders;
 
     public SpaceshipsManager()
     {
-        activeSpaceships = new Dictionary<int, Spaceship>();
+        activeGliders = new Dictionary<int, Glider>();
     }
 
-    public Vector3Int[] CreateSpaceship(Vector3Int centerCell, GliderDirection direction, GliderPhase phase, SpaceshipType type = SpaceshipType.Glider)
+    public Dictionary<int, Glider> GetActiveGliders() => activeGliders;
+
+    public Vector3Int[] CreateGlider(Vector3Int centerCell, GliderDirection direction, GliderPhase phase, SpaceshipType type = SpaceshipType.Glider)
     {
-        Spaceship newSpaceship = new Spaceship(nextSpaceshipID, centerCell, type, direction, phase);
-        activeSpaceships[nextSpaceshipID] = newSpaceship;
-        Vector3Int[] initialCells = newSpaceship.GetCurrentPhaseCells();
-        nextSpaceshipID++;
+        Glider newGlider = new Glider(nextGliderID, centerCell, direction, phase);
+        activeGliders[nextGliderID] = newGlider;
+        Vector3Int[] initialCells = newGlider.GetCurrentPhaseCells();
+        nextGliderID++;
         return initialCells;
     }
-
-    public Dictionary<int, Spaceship> GetActiveSpaceships() => activeSpaceships;
-
-    public CellsInfo GetNextGenerationWithCollisions()
+    
+    public GliderInfo GetNextGenerationWithCollisions()
     {
         HashSet<Vector3Int> allCells = new HashSet<Vector3Int>();
-        Dictionary<Vector3Int, List<int>> cellToSpaceships = new Dictionary<Vector3Int, List<int>>();
+        Dictionary<Vector3Int, List<int>> cellToGliders = new Dictionary<Vector3Int, List<int>>();
         Dictionary<int , Vector3Int[]> idToCells = new Dictionary<int, Vector3Int[]>();
 
-        foreach (var Spaceship in activeSpaceships.Values)
+        foreach (var Glider in activeGliders.Values)
         {
-            Spaceship.UpdatePhase();
-            Vector3Int[] cells = Spaceship.GetCurrentPhaseCells();
+            Glider.UpdatePhase();
+            Vector3Int[] cells = Glider.GetCurrentPhaseCells();
 
             if (cells != null && cells.Length > 0)
             {
                 // これもforeachの中でやったらもうちょい計算量削減できる
                 allCells.UnionWith(cells);
-                idToCells[Spaceship.GetID()] = cells;
+                idToCells[Glider.GetID()] = cells;
 
                 // 同時に衝突検知用のデータ構築
                 foreach (var cell in cells)
                 {
-                    if (!cellToSpaceships.ContainsKey(cell))
+                    if (!cellToGliders.ContainsKey(cell))
                     {
-                        cellToSpaceships[cell] = new List<int>();
+                        cellToGliders[cell] = new List<int>();
                     }
-                    cellToSpaceships[cell].Add(Spaceship.GetID());
+                    cellToGliders[cell].Add(Glider.GetID());
                 }
             }
         }
 
         // 衝突のみ抽出
-        var collisions = cellToSpaceships.Where(kvp => kvp.Value.Count > 1).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        var collisions = cellToGliders.Where(kvp => kvp.Value.Count > 1).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         Debug.Log($"Collisions detected: {collisions.Count}");
 
         foreach (var collision in collisions)
         {
             Vector3Int cellPosition = collision.Key;
-            List<int> spaceshipIDs = collision.Value;
+            List<int> GliderIDs = collision.Value;
             
-            Debug.Log($"座標 ({cellPosition.x}, {cellPosition.y}, {cellPosition.z}) で {spaceshipIDs.Count}機のSpaceshipが衝突:");
+            Debug.Log($"座標 ({cellPosition.x}, {cellPosition.y}, {cellPosition.z}) で {GliderIDs.Count}機のGliderが衝突:");
 
-            foreach (int id in spaceshipIDs)
+            foreach (int id in GliderIDs)
             {
-                Debug.Log($"  - Spaceship ID: {id}");
-                ChangeSpaceshipColor(id, Color.red); // 衝突したSpaceshipの色を赤に変更
+                Debug.Log($"  - Glider ID: {id}");
+                ChangeGliderColor(id, Color.red); // 衝突したGliderの色を赤に変更
             }
         }
 
-        return new CellsInfo
+        return new GliderInfo
         {
             AllCells = allCells,
             Collisions = collisions,
@@ -83,41 +83,41 @@ public class SpaceshipsManager
     }
 
 
-    void ChangeSpaceshipColor(int id, Color newColor)
+    void ChangeGliderColor(int id, Color newColor)
     {
-        if (activeSpaceships.ContainsKey(id))
+        if (activeGliders.ContainsKey(id))
         {
-            activeSpaceships[id].Color = newColor;
+            activeGliders[id].Color = newColor;
         }
         else
         {
-            Debug.LogWarning($"Color cannot change, Spaceship with ID {id} does not exist.");
+            Debug.LogWarning($"Color cannot change, Glider with ID {id} does not exist.");
         }
     }
 
     // 
-    public void RemoveSpaceship(int id)
+    public void RemoveGlider(int id)
     {
-        if (activeSpaceships.ContainsKey(id))
+        if (activeGliders.ContainsKey(id))
         {
-            activeSpaceships.Remove(id);
+            activeGliders.Remove(id);
         }
         else
         {
-            Debug.LogWarning($"Spaceship with ID {id} does not exist.");
+            Debug.LogWarning($"Glider with ID {id} does not exist.");
         }
     }
 
 
-    // 全Spaceshipの次世代セル位置を返す
+    // 全Gliderの次世代セル位置を返す
     public HashSet<Vector3Int> GetNextGenerationCells()
     {
         HashSet<Vector3Int> allCells = new HashSet<Vector3Int>();
 
-        foreach (var Spaceship in activeSpaceships.Values)
+        foreach (var Glider in activeGliders.Values)
         {
-            Spaceship.UpdatePhase();
-            Vector3Int[] cells = Spaceship.GetCurrentPhaseCells();
+            Glider.UpdatePhase();
+            Vector3Int[] cells = Glider.GetCurrentPhaseCells();
             if (cells != null && cells.Length > 0)
             {
                 allCells.UnionWith(cells);
@@ -128,11 +128,11 @@ public class SpaceshipsManager
     }
 
     // つかうかも
-    // 全てのSpaceshipをクリア
+    // 全てのGliderをクリア
     //
-    private void ClearAllSpaceships()
+    private void ClearAllGliders()
     {
-        activeSpaceships.Clear();
-        nextSpaceshipID = 0;
+        activeGliders.Clear();
+        nextGliderID = 0;
     }
 }
