@@ -505,7 +505,7 @@ GameObject:
   - component: {fileID: 1903441912}
   - component: {fileID: 1903441911}
   m_Layer: 0
-  m_Name: CelliAutomaton
+  m_Name: CellularAutomaton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -527,17 +527,27 @@ MonoBehaviour:
   width: 30
   height: 30
   depth: 30
-  stepInterval: 1
+  stepInterval: 10
   animationDuration: 0.1
   initialSpaceShips:
-  - position: {x: 15, y: 0, z: 15}
+  - centerPosition: {x: 5, y: 0, z: 28}
     direction: 0
-  - position: {x: 15, y: 5, z: 15}
+    color: {r: 0.9529412, g: 0.8744844, b: 0.43529415, a: 0}
+  - centerPosition: {x: 3, y: 0, z: 16}
     direction: 1
-  - position: {x: 15, y: 10, z: 15}
+    color: {r: 0.43921566, g: 0.892865, b: 0.9529412, a: 0}
+  - centerPosition: {x: 3, y: 0, z: 8}
     direction: 2
-  - position: {x: 15, y: 15, z: 15}
+    color: {r: 0.9529412, g: 0.43921566, b: 0.9018683, a: 0}
+  - centerPosition: {x: 19, y: 0, z: 15}
     direction: 3
+    color: {r: 0.9529412, g: 0.4909355, b: 0.43921566, a: 0}
+  - centerPosition: {x: 15, y: 0, z: 0}
+    direction: 2
+    color: {r: 0.43921566, g: 0.47483137, b: 0.9529412, a: 0}
+  - centerPosition: {x: 26, y: 0, z: 10}
+    direction: 0
+    color: {r: 0.43921566, g: 0.9529412, b: 0.5881533, a: 0}
 --- !u!4 &1903441912
 Transform:
   m_ObjectHideFlags: 0
@@ -548,7 +558,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.95, y: 0.95, z: 0.95}
+  m_LocalScale: {x: 0.98, y: 0.98, z: 0.98}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
