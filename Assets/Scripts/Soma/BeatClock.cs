@@ -20,7 +20,7 @@ public class BeatClock : MonoBehaviour
             {
                 currentBeat = (currentBeat % 16) + 1;
                 beatSubject.OnNext(currentBeat);
-                Debug.Log($"Beat: {currentBeat}");
+                // Debug.Log($"Beat: {currentBeat}");
 
                 if (beatText != null)
                 {
