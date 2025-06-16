@@ -41,8 +41,8 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         // ここで全てのセルを非アクティブでinstantiateして初期化している
         InitializeGrid();
         // 初期セルをアクティブに変更
-        HashSet<Vector3Int> InitialCells = SetupInitialSpaceships();
-        ActivateCells(InitialCells);
+        // HashSet<Vector3Int> InitialCells = SetupInitialSpaceships();
+        // ActivateCells(InitialCells);
 
         StartCoroutine(StepRoutine());
     }
@@ -120,7 +120,6 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
 
 
 
-
     void DeactivateCurrentCells()
     {
         foreach (var cell in currentActiveCells)
@@ -130,6 +129,11 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
                 StartCoroutine(AnimateScale(cube, Vector3.one, Vector3.zero));
             }
         }
+    }
+
+    public void CreateNewGlider(Vector3Int CenterPosition)
+    {
+        Vector3Int[] initialCell = SpaceshipsManager.CreateGlider(CenterPosition, GliderDirection.RightBackward , GliderPhase.Phase1);
     }
 
     private HashSet<Vector3Int> ActivateCellsWithId(Dictionary<int, Vector3Int[]> cells)

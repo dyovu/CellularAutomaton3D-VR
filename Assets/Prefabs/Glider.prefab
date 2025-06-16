@@ -50,3 +50,7 @@ MonoBehaviour:
   depth: 30
   stepInterval: 0.3
   animationDuration: 0.1
+  initialSpaceships:
+  - position: {x: 15, y: 15, z: 0}
+    direction: 0
+    phase: 0

@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Scenes/Main.unity
+    path: Assets/Scenes/_Main.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 0
     path: Assets/Samples/Meta XR Core SDK/77.0.0/Sample Scenes/ControllerModels.unity
