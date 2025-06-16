@@ -2,92 +2,122 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-using static SpaceShipConstants;
+using static SpaceshipConstants;
 
 
-// SpaceShipsManager - Unity依存を完全に除去
-public class SpaceShipsManager
+// SpaceshipsManager - Unity依存を完全に除去
+public class SpaceshipsManager
 {
-    private int nextSpaceShipID = 0;
-    private Dictionary<int, Spaceship> activeSpaceShips;
+    private int nextSpaceshipID = 0;
+    private Dictionary<int, Spaceship> activeSpaceships;
 
-    public SpaceShipsManager()
+    public SpaceshipsManager()
     {
-        activeSpaceShips = new Dictionary<int, Spaceship>();
+        activeSpaceships = new Dictionary<int, Spaceship>();
     }
 
-    public Vector3Int[] CreateSpaceShip(Vector3Int centerCell, GliderDirection direction = GliderDirection.RightBackward, SpaceShipsType type = SpaceShipsType.Glider)
+    public Vector3Int[] CreateSpaceship(Vector3Int centerCell, GliderDirection direction, GliderPhase phase, SpaceshipType type = SpaceshipType.Glider)
     {
-        Spaceship newSpaceShip = new Spaceship(nextSpaceShipID, centerCell, type, direction);
-        activeSpaceShips[nextSpaceShipID] = newSpaceShip;
-        Vector3Int[] initialCells = newSpaceShip.GetCurrentPhaseCells();
-        nextSpaceShipID++;
+        Spaceship newSpaceship = new Spaceship(nextSpaceshipID, centerCell, type, direction, phase);
+        activeSpaceships[nextSpaceshipID] = newSpaceship;
+        Vector3Int[] initialCells = newSpaceship.GetCurrentPhaseCells();
+        nextSpaceshipID++;
         return initialCells;
     }
 
-    public Dictionary<int, Spaceship> GetActiveSpaceShips() => activeSpaceShips;
+    public Dictionary<int, Spaceship> GetActiveSpaceships() => activeSpaceships;
 
-    public NextCellsInfo GetNextGenerationWithCollisions()
+    public CellsInfo GetNextGenerationWithCollisions()
     {
         HashSet<Vector3Int> allCells = new HashSet<Vector3Int>();
-        Dictionary<Vector3Int, List<int>> cellToSpaceShips = new Dictionary<Vector3Int, List<int>>();
+        Dictionary<Vector3Int, List<int>> cellToSpaceships = new Dictionary<Vector3Int, List<int>>();
+        Dictionary<int , Vector3Int[]> idToCells = new Dictionary<int, Vector3Int[]>();
 
-        foreach (var spaceShip in activeSpaceShips.Values)
+        foreach (var Spaceship in activeSpaceships.Values)
         {
-            spaceShip.UpdatePhase();
-            Vector3Int[] cells = spaceShip.GetCurrentPhaseCells();
-            
+            Spaceship.UpdatePhase();
+            Vector3Int[] cells = Spaceship.GetCurrentPhaseCells();
+
             if (cells != null && cells.Length > 0)
             {
                 // これもforeachの中でやったらもうちょい計算量削減できる
                 allCells.UnionWith(cells);
-                
+                idToCells[Spaceship.GetID()] = cells;
+
                 // 同時に衝突検知用のデータ構築
                 foreach (var cell in cells)
                 {
-                    if (!cellToSpaceShips.ContainsKey(cell))
+                    if (!cellToSpaceships.ContainsKey(cell))
                     {
-                        cellToSpaceShips[cell] = new List<int>();
+                        cellToSpaceships[cell] = new List<int>();
                     }
-                    cellToSpaceShips[cell].Add(spaceShip.GetID());
+                    cellToSpaceships[cell].Add(Spaceship.GetID());
                 }
             }
         }
 
         // 衝突のみ抽出
-        var collisions = cellToSpaceShips.Where(kvp => kvp.Value.Count > 1)
-                                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        var collisions = cellToSpaceships.Where(kvp => kvp.Value.Count > 1).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        Debug.Log($"Collisions detected: {collisions.Count}");
 
-        return new NextCellsInfo 
-        { 
-            AllCells = allCells, 
-            Collisions = collisions 
+        foreach (var collision in collisions)
+        {
+            Vector3Int cellPosition = collision.Key;
+            List<int> spaceshipIDs = collision.Value;
+            
+            Debug.Log($"座標 ({cellPosition.x}, {cellPosition.y}, {cellPosition.z}) で {spaceshipIDs.Count}機のSpaceshipが衝突:");
+
+            foreach (int id in spaceshipIDs)
+            {
+                Debug.Log($"  - Spaceship ID: {id}");
+                ChangeSpaceshipColor(id, Color.red); // 衝突したSpaceshipの色を赤に変更
+            }
+        }
+
+        return new CellsInfo
+        {
+            AllCells = allCells,
+            Collisions = collisions,
+            IDToCells = idToCells
         };
     }
 
-    // 
-    public void RemoveSpaceShip(int id)
+
+    void ChangeSpaceshipColor(int id, Color newColor)
     {
-        if (activeSpaceShips.ContainsKey(id))
+        if (activeSpaceships.ContainsKey(id))
         {
-            activeSpaceShips.Remove(id);
+            activeSpaceships[id].Color = newColor;
         }
         else
         {
-            Debug.LogWarning($"SpaceShip with ID {id} does not exist.");
+            Debug.LogWarning($"Color cannot change, Spaceship with ID {id} does not exist.");
+        }
+    }
+
+    // 
+    public void RemoveSpaceship(int id)
+    {
+        if (activeSpaceships.ContainsKey(id))
+        {
+            activeSpaceships.Remove(id);
+        }
+        else
+        {
+            Debug.LogWarning($"Spaceship with ID {id} does not exist.");
         }
     }
 
 
-    // 全SpaceShipの次世代セル位置を返す
+    // 全Spaceshipの次世代セル位置を返す
     public HashSet<Vector3Int> GetNextGenerationCells()
     {
         HashSet<Vector3Int> allCells = new HashSet<Vector3Int>();
 
-        foreach (var spaceShip in activeSpaceShips.Values)
+        foreach (var Spaceship in activeSpaceships.Values)
         {
-            spaceShip.UpdatePhase();
-            Vector3Int[] cells = spaceShip.GetCurrentPhaseCells();
+            Spaceship.UpdatePhase();
+            Vector3Int[] cells = Spaceship.GetCurrentPhaseCells();
             if (cells != null && cells.Length > 0)
             {
                 allCells.UnionWith(cells);
@@ -98,11 +128,11 @@ public class SpaceShipsManager
     }
 
     // つかうかも
-    // 全てのSpaceShipをクリア
+    // 全てのSpaceshipをクリア
     //
-    private void ClearAllSpaceShips()
+    private void ClearAllSpaceships()
     {
-        activeSpaceShips.Clear();
-        nextSpaceShipID = 0;
+        activeSpaceships.Clear();
+        nextSpaceshipID = 0;
     }
 }

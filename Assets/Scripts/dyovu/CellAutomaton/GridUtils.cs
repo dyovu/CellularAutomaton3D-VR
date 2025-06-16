@@ -7,11 +7,12 @@ public static class GridUtils
     public static void SetGridSize(Vector3Int size)
     {
         gridSize = size;
+        Debug.Log($"Grid size set to: {gridSize}");
     }
 
     //
     // トーラス境界を考慮してセル位置を調整
-    // public関数としてSpaceShipの中で呼び出すよ
+    // public関数としてSpaceshipの中で呼び出すよ
     // 
     public static Vector3Int AdjustPosition(Vector3Int position)
     {

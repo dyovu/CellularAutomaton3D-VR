@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
-using static SpaceShipConstants;
+using static SpaceshipConstants;
 
 
 // ToroidalBoundsCellulerAutomaton - Grid操作を集約
@@ -15,31 +16,32 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
     [SerializeField] float stepInterval = 1.3f;
     [SerializeField] float animationDuration = 0.1f;
     [System.Serializable]
-    public struct InitialSpaceShipConfig
+    public struct InitialSpaceshipConfig
     {
         public Vector3Int position;
         public GliderDirection direction;
+        public GliderPhase phase;
     }
 
     // 初期配置設定
-    [SerializeField] InitialSpaceShipConfig[] initialSpaceShips = new InitialSpaceShipConfig[]
+    [SerializeField] InitialSpaceshipConfig[] initialSpaceships = new InitialSpaceshipConfig[]
     {
-        new InitialSpaceShipConfig { position = new Vector3Int(15, 15, 0), direction = GliderDirection.RightBackward },
+        new InitialSpaceshipConfig { position = new Vector3Int(15, 15, 0), direction = GliderDirection.RightBackward, phase = GliderPhase.Phase1 },
     };
 
     Dictionary<Vector3Int, GameObject> GRID = new Dictionary<Vector3Int, GameObject>();
     HashSet<Vector3Int> currentActiveCells = new HashSet<Vector3Int>();
 
-    private SpaceShipsManager spaceShipsManager;
+    private SpaceshipsManager SpaceshipsManager;
 
     void Start()
     {
-        spaceShipsManager = new SpaceShipsManager();
+        SpaceshipsManager = new SpaceshipsManager();
         GridUtils.SetGridSize(new Vector3Int(width, height, depth));
         // ここで全てのセルを非アクティブでinstantiateして初期化している
         InitializeGrid();
         // 初期セルをアクティブに変更
-        HashSet<Vector3Int> InitialCells = SetupInitialSpaceShips();
+        HashSet<Vector3Int> InitialCells = SetupInitialSpaceships();
         ActivateCells(InitialCells);
 
         StartCoroutine(StepRoutine());
@@ -65,12 +67,12 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         }
     }
 
-    HashSet<Vector3Int> SetupInitialSpaceShips()
+    HashSet<Vector3Int> SetupInitialSpaceships()
     {
         HashSet<Vector3Int> initialCells = new HashSet<Vector3Int>();
-        foreach (var config in initialSpaceShips)
+        foreach (var config in initialSpaceships)
         {
-            Vector3Int[] initialCell = spaceShipsManager.CreateSpaceShip(config.position, config.direction);
+            Vector3Int[] initialCell = SpaceshipsManager.CreateSpaceship(config.position, config.direction, config.phase);
             initialCells.UnionWith(initialCell);
         }
         return initialCells;
@@ -91,18 +93,33 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         DeactivateCurrentCells();
 
         // 次世代のセル位置と衝突しているグライダーの座標とIDを取得
-        NextCellsInfo nextCellsInfo = spaceShipsManager.GetNextGenerationWithCollisions();
+        CellsInfo nextCellsInfo = SpaceshipsManager.GetNextGenerationWithCollisions();
 
         HashSet<Vector3Int> nextCells = nextCellsInfo.AllCells;
         Dictionary<Vector3Int, List<int>> collisions = nextCellsInfo.Collisions;
+        Dictionary<int, Vector3Int[]> nextCellsWithId = nextCellsInfo.IDToCells;
+
+        HashSet<Vector3Int> activeCellsWithID = ActivateCellsWithId(nextCellsWithId);
+
+        if (activeCellsWithID.Count == nextCells.Count)
+        {
+            Debug.Log("All active cells are accounted for in the next generation.");
+        }
+        else
+        {
+            Debug.Log(activeCellsWithID.Except(nextCells));
+        }
 
         // 新しいセルをアクティブに
-        ActivateCells(nextCells);
-        RemoveCollidedSpaceShips(collisions);
+        // ActivateCells(nextCells);
+        // RemoveCollidedSpaceships(collisions);
         // 現在のアクティブセルを更新
 
-        currentActiveCells = nextCells;
+        // currentActiveCells = nextCells;
     }
+
+
+
 
     void DeactivateCurrentCells()
     {
@@ -114,6 +131,47 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
             }
         }
     }
+
+    private HashSet<Vector3Int> ActivateCellsWithId(Dictionary<int, Vector3Int[]> cells)
+    {
+        HashSet<Vector3Int> activeCells = new HashSet<Vector3Int>();
+        foreach (var (id, cell) in cells)
+        {
+            Color col = SpaceshipsManager.GetActiveSpaceships()[id].Color;
+            activeCells.UnionWith(cell);
+            Debug.Log($"Activating cells for Spaceship ID {id} with color {col}");
+            foreach (Vector3Int position in cell)
+            {
+                ActivateCellWithId(position, col);
+            }
+        }
+        currentActiveCells = activeCells; // 現在のアクティブセルを更新
+        return activeCells;
+    }
+
+    void ActivateCellWithId(Vector3Int position, Color color)
+    {
+        if (GRID.TryGetValue(position, out GameObject cube))
+        {
+            cube.SetActive(true);
+            Renderer renderer = cube.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                renderer.material.color = color;
+            }
+            else
+            {
+                Debug.LogWarning($"Renderer not found on the cube at position {position}. Cannot set color.");
+            }
+            StartCoroutine(AnimateScale(cube, Vector3.zero, Vector3.one));
+        }
+        else
+        {
+            Debug.LogWarning($"Cell at {position} does not exist in the grid.");
+        }
+    }
+
+    
 
     void ActivateCells(HashSet<Vector3Int> cells)
     {
@@ -128,18 +186,19 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         currentActiveCells = cells; 
     }
 
-    void RemoveCollidedSpaceShips(Dictionary<Vector3Int, List<int>> collisions)
+
+    void RemoveCollidedSpaceships(Dictionary<Vector3Int, List<int>> collisions)
     {
         foreach (var collision in collisions)
         {
             Vector3Int cell = collision.Key;
-            List<int> spaceShipIDs = collision.Value;
+            List<int> SpaceshipIDs = collision.Value;
 
             // ここで衝突したスペースシップを削除
-            foreach (int id in spaceShipIDs)
+            foreach (int id in SpaceshipIDs)
             {
-                spaceShipsManager.RemoveSpaceShip(id);
-                Debug.Log($"SpaceShip with ID {id} has been removed due to collision at cell {cell}.");
+                SpaceshipsManager.RemoveSpaceship(id);
+                Debug.Log($"Spaceship with ID {id} has been removed due to collision at cell {cell}.");
             }
 
             // セルを非アクティブにする
