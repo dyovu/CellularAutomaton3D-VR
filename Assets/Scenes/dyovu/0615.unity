@@ -536,6 +536,12 @@ MonoBehaviour:
   - position: {x: 29, y: 0, z: 29}
     direction: 2
     phase: 0
+  - position: {x: 3, y: 0, z: 27}
+    direction: 3
+    phase: 0
+  - position: {x: 3, y: 0, z: 5}
+    direction: 0
+    phase: 0
 --- !u!4 &1903441912
 Transform:
   m_ObjectHideFlags: 0

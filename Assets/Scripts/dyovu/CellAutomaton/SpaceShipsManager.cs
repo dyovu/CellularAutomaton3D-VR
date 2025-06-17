@@ -23,15 +23,14 @@ public class SpaceshipsManager
     public Dictionary<int, Bays> GetActiveBays() => activeBays;
 
 
-
-    public Vector3Int[] CreateGlider(Vector3Int centerCell, GliderDirection direction, GliderPhase phase, SpaceshipType type = SpaceshipType.Glider)
+    public (Vector3Int[], int) CreateGlider(Vector3Int centerCell, GliderDirection direction, GliderPhase phase, SpaceshipType type = SpaceshipType.Glider)
     {
-        Glider newGlider = new Glider(nextGliderID, centerCell, direction, phase);
+        Glider newGlider = new Glider(nextGliderID, centerCell, direction, phase, Color.white);
         activeGliders[nextGliderID] = newGlider;
         Vector3Int[] initialCells = newGlider.GetCurrentPhaseCells();
         nextGliderID++;
         // Debug.Log($"Glider created with ID: {newGlider.GetID()} at position {centerCell} in direction {direction} and phase {phase}");
-        return initialCells;
+        return (initialCells, newGlider.GetID());
     }
 
     public void CreateBays(Vector3Int forwardCell, BaysDirection direction)
@@ -57,18 +56,21 @@ public class SpaceshipsManager
 
             if (cells != null && cells.Length > 0)
             {
-                // これもforeachの中でやったらもうちょい計算量削減できる
-                allCells.UnionWith(cells);
-                idToCells[Glider.GetID()] = cells;
-
-                // 同時に衝突検知用のデータ構築
-                foreach (var cell in cells)
+                Vector3Int[] visibleCells = cells.Where(cell => GridUtils.IsInVisibleArea(cell)).ToArray();
+                if (visibleCells.Length > 0)
                 {
-                    if (!cellToGliders.ContainsKey(cell))
+                    allCells.UnionWith(cells);
+                    idToCells[Glider.GetID()] = cells;
+
+                    // 同時に衝突検知用のデータ構築
+                    foreach (var cell in cells)
                     {
-                        cellToGliders[cell] = new List<int>();
+                        if (!cellToGliders.ContainsKey(cell))
+                        {
+                            cellToGliders[cell] = new List<int>();
+                        }
+                        cellToGliders[cell].Add(Glider.GetID());
                     }
-                    cellToGliders[cell].Add(Glider.GetID());
                 }
             }
         }
@@ -96,18 +98,21 @@ public class SpaceshipsManager
 
             if (cells != null && cells.Length > 0)
             {
-                allCells.UnionWith(cells);
-                idToCells[bays.GetID()] = cells;
+                Vector3Int[] visibleCells = cells.Where(cell => GridUtils.IsInVisibleArea(cell)).ToArray();
+                if (visibleCells.Length > 0){
+                    allCells.UnionWith(cells);
+                    idToCells[bays.GetID()] = cells;
 
-                // 同時に衝突検知用のデータ構築
-                foreach (var cell in cells)
-                {
-                    if (!cellToBays.ContainsKey(cell))
+                    // 同時に衝突検知用のデータ構築
+                    foreach (var cell in cells)
                     {
-                        cellToBays[cell] = new List<int>();
+                        if (!cellToBays.ContainsKey(cell))
+                        {
+                            cellToBays[cell] = new List<int>();
+                        }
+                        cellToBays[cell].Add(bays.GetID());
                     }
-                    cellToBays[cell].Add(bays.GetID());
-                }
+                }    
             }
         }
         // 衝突のみ抽出

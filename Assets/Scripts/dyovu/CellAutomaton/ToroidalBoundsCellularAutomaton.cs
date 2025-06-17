@@ -24,10 +24,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
     }
 
     // 初期配置設定
-    [SerializeField] InitialSpaceshipConfig[] initialSpaceships = new InitialSpaceshipConfig[]
-    {
-        new InitialSpaceshipConfig { position = new Vector3Int(15, 15, 0), direction = GliderDirection.RightBackward, phase = GliderPhase.Phase1 },
-    };
+    [SerializeField] InitialSpaceshipConfig[] initialSpaceships;
 
     Dictionary<Vector3Int, GameObject> GRID = new Dictionary<Vector3Int, GameObject>();
     HashSet<Vector3Int> currentGliderCells = new HashSet<Vector3Int>();
@@ -42,9 +39,10 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         // ここで全てのセルを非アクティブでinstantiateして初期化している
         InitializeGrid();
         // 初期セルをアクティブに変更
-        HashSet<Vector3Int> InitialCells = SetupInitialSpaceships();
-        SpaceshipsManager.CreateBays(new Vector3Int(15,3,3), BaysDirection.Up); // 初期ベイを作成
-        ActivateCells(InitialCells);
+        Dictionary<int, Vector3Int[]> InitialCells = SetupInitialSpaceships();
+        SpaceshipsManager.CreateBays(new Vector3Int(15,20,3), BaysDirection.Up); // 初期ベイを作成
+        HashSet<Vector3Int> cells = ActivateBaysWithId(InitialCells);
+        currentGliderCells = cells;
 
         StartCoroutine(StepRoutine());
     }
@@ -69,14 +67,13 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         }
     }
 
-    HashSet<Vector3Int> SetupInitialSpaceships()
+    Dictionary<int, Vector3Int[]> SetupInitialSpaceships()
     {
-        HashSet<Vector3Int> initialCells = new HashSet<Vector3Int>();
+        Dictionary<int, Vector3Int[]> initialCells = new Dictionary<int, Vector3Int[]>();
         foreach (var config in initialSpaceships)
         {
-            Vector3Int[] initialCell = SpaceshipsManager.CreateGlider(config.position, config.direction, config.phase);
-            
-            initialCells.UnionWith(initialCell);
+            (Vector3Int[] initialCell, int id) = SpaceshipsManager.CreateGlider(config.position, config.direction, config.phase);
+            initialCells[id] = initialCell;
         }
         return initialCells;
     }
@@ -133,6 +130,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
     {
         foreach (var cell in currentGliderCells)
         {
+            if (!GridUtils.IsInVisibleArea(cell)) continue; // return → continue
             if (GRID.TryGetValue(cell, out GameObject cube))
             {
                 StartCoroutine(AnimateScale(cube, Vector3.one, Vector3.zero));
@@ -140,6 +138,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         }
         foreach (var cell in currentBaysCells)
         {
+            if (!GridUtils.IsInVisibleArea(cell)) continue; // return → continue
             if (GRID.TryGetValue(cell, out GameObject cube))
             {
                 StartCoroutine(AnimateScale(cube, Vector3.one, Vector3.zero));
@@ -155,9 +154,12 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
             if (SpaceshipsManager.GetActiveGliders().ContainsKey(id))
             {
                 Color col = SpaceshipsManager.GetActiveGliders()[id].Color;
-                activeCells.UnionWith(cell);
                 foreach (Vector3Int position in cell)
                 {
+                    if (GridUtils.IsInVisibleArea(position)) // 表示領域のみ追加
+                    {
+                        activeCells.Add(position);
+                    }
                     ActivateCellWithId(position, col);
                 }
             }
@@ -171,10 +173,12 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         foreach (var (id, cell) in cells)
         {
             Color col = Color.black;
-            activeCells.UnionWith(cell);
-            Debug.Log($"Activating cells for Bays ID {id} with color {col}");
             foreach (Vector3Int position in cell)
             {
+                if (GridUtils.IsInVisibleArea(position)) // 表示領域のみ追加
+                {
+                    activeCells.Add(position);
+                }
                 ActivateCellWithId(position, col);
             }
         }
@@ -183,6 +187,8 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
 
     void ActivateCellWithId(Vector3Int position, Color color)
     {
+        if (!GridUtils.IsInVisibleArea(position)) return;
+
         if (GRID.TryGetValue(position, out GameObject cube))
         {
             cube.SetActive(true);
@@ -203,8 +209,6 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         }
     }
 
-    
-
     void ActivateCells(HashSet<Vector3Int> cells)
     {
         foreach (var cell in cells)
@@ -212,10 +216,17 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
             if (GRID.TryGetValue(cell, out GameObject cube))
             {
                 cube.SetActive(true);
+                // 色を白に設定
+                Renderer renderer = cube.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    renderer.material.color = Color.white;
+                }
                 StartCoroutine(AnimateScale(cube, Vector3.zero, Vector3.one));
             }
         }
-        currentGliderCells = cells; 
+        // 表示領域のセルのみ追跡
+        currentGliderCells = cells.Where(cell => GridUtils.IsInVisibleArea(cell)).ToHashSet();
     }
 
     

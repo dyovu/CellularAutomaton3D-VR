@@ -16,14 +16,14 @@ namespace dyovu.Glider
         private GliderDirection direction;
         private Color GliderColor;
 
-        public Glider(int id, Vector3Int centerCell, GliderDirection direction, GliderPhase phase)
+        public Glider(int id, Vector3Int centerCell, GliderDirection direction, GliderPhase phase, Color color)
         {
             ID = id;
             generation = 0;
             this.phase = phase;
             this.centerCell = centerCell;
             this.direction = direction;
-            this.GliderColor = Color.white; // デフォルトの色を設定
+            this.GliderColor = color; // デフォルトの色を設定
         }
 
         public int GetID() { return ID; }
