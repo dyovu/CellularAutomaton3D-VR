@@ -6,6 +6,7 @@ public class GridHoverHighlighter : MonoBehaviour
     [SerializeField] private Transform cubePlane; // スケール(6,1,6)のCube
     [SerializeField] private Transform highlightPrefab;
     [SerializeField] private RayInteractor rayInteractor;
+    [SerializeField] private ToroidalBoundsCellularAutomaton automaton;
     // [SerializeField] private int gridSize = 6;
 
     private int gridSize;
@@ -44,6 +45,8 @@ public class GridHoverHighlighter : MonoBehaviour
                 Debug.Log($"[TRIGGER] Glider placement at local (X: {snappedX}, Z: {snappedZ})");
                 Vector3 snappedWorldPos = cubePlane.TransformPoint(new Vector3(snappedX, 0f, snappedZ));
                 Debug.Log($"[TRIGGER] Glider placement at world position: {snappedWorldPos}");
+                Vector3Int snappedGridPos = new Vector3Int(gridX, 0, gridZ);
+                automaton.CreateNewGlider(snappedGridPos);
             }
 
             // グリッドサイズに応じてスケールを調整
