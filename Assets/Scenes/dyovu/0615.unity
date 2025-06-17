@@ -527,27 +527,15 @@ MonoBehaviour:
   width: 30
   height: 30
   depth: 30
-  stepInterval: 10
+  stepInterval: 0.5
   animationDuration: 0.1
-  initialSpaceShips:
-  - centerPosition: {x: 5, y: 0, z: 28}
-    direction: 0
-    color: {r: 0.9529412, g: 0.8744844, b: 0.43529415, a: 0}
-  - centerPosition: {x: 3, y: 0, z: 16}
+  initialSpaceships:
+  - position: {x: 15, y: 0, z: 15}
     direction: 1
-    color: {r: 0.43921566, g: 0.892865, b: 0.9529412, a: 0}
-  - centerPosition: {x: 3, y: 0, z: 8}
+    phase: 0
+  - position: {x: 29, y: 0, z: 29}
     direction: 2
-    color: {r: 0.9529412, g: 0.43921566, b: 0.9018683, a: 0}
-  - centerPosition: {x: 19, y: 0, z: 15}
-    direction: 3
-    color: {r: 0.9529412, g: 0.4909355, b: 0.43921566, a: 0}
-  - centerPosition: {x: 15, y: 0, z: 0}
-    direction: 2
-    color: {r: 0.43921566, g: 0.47483137, b: 0.9529412, a: 0}
-  - centerPosition: {x: 26, y: 0, z: 10}
-    direction: 0
-    color: {r: 0.43921566, g: 0.9529412, b: 0.5881533, a: 0}
+    phase: 0
 --- !u!4 &1903441912
 Transform:
   m_ObjectHideFlags: 0

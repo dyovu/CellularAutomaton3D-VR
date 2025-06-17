@@ -4,15 +4,13 @@ using System.Linq;
 
 using static SpaceshipConstants;
 using static GridUtils;
-using UnityEngine.PlayerLoop;
-
 
 namespace dyovu.Glider
 {
     public class Glider
     {
         private int ID;
-        private Vector3Int centerCell;
+        private Vector3Int centerCell; // 3x3の中心のセルを受け取る
         private int generation;
         private GliderPhase phase;
         private GliderDirection direction;
@@ -32,7 +30,7 @@ namespace dyovu.Glider
         public Vector3Int CenterPosition { get { return centerCell; } }
         public Color Color { get { return GliderColor; } set { GliderColor = value; } }
 
-        public void UpdatePhase() // 次の世代のセルを更新してその配列を返す
+        public void UpdatePhase()
         {
             switch (phase)
             {
@@ -54,7 +52,7 @@ namespace dyovu.Glider
                     phase = GliderPhase.Phase1;
                     break;
             }
-            AdjustPosition(centerCell); // トーラス境界を考慮して位置調整
+            centerCell = AdjustPosition(centerCell); // トーラス境界を考慮して位置調整
             generation++;
         }
 
@@ -75,7 +73,7 @@ namespace dyovu.Glider
             return currentGenerationCells;
         }
 
-        // トーラス境界を考慮して調整したセルの位置を返す
+        // ディレクションを考慮したセルの位置調整
         private Vector3Int RotateCells(Vector3Int offset_cell)
         {
             switch (direction)
@@ -93,7 +91,7 @@ namespace dyovu.Glider
             }
         }
 
-        // トーラス境界を考慮して中心セルのオフセットを返す
+        // ディレクションを考慮した中心セルの位置調整
         private Vector3Int RotateCenterOffset(Vector3Int centerOffset)
         {
             switch (direction)
