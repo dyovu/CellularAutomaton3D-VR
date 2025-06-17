@@ -24,13 +24,11 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
     }
 
     // 初期配置設定
-    [SerializeField] InitialSpaceshipConfig[] initialSpaceships = new InitialSpaceshipConfig[]
-    {
-        new InitialSpaceshipConfig { position = new Vector3Int(15, 15, 0), direction = GliderDirection.RightBackward, phase = GliderPhase.Phase1 },
-    };
+    [SerializeField] InitialSpaceshipConfig[] initialSpaceships;
 
     Dictionary<Vector3Int, GameObject> GRID = new Dictionary<Vector3Int, GameObject>();
-    HashSet<Vector3Int> currentActiveCells = new HashSet<Vector3Int>();
+    HashSet<Vector3Int> currentGliderCells = new HashSet<Vector3Int>();
+    HashSet<Vector3Int> currentBaysCells = new HashSet<Vector3Int>();
 
     private SpaceshipsManager SpaceshipsManager;
 
@@ -41,8 +39,10 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         // ここで全てのセルを非アクティブでinstantiateして初期化している
         InitializeGrid();
         // 初期セルをアクティブに変更
-        HashSet<Vector3Int> InitialCells = SetupInitialSpaceships();
-        ActivateCells(InitialCells);
+        Dictionary<int, Vector3Int[]> InitialCells = SetupInitialSpaceships();
+        SpaceshipsManager.CreateBays(new Vector3Int(15,20,3), BaysDirection.Up); // 初期ベイを作成
+        HashSet<Vector3Int> cells = ActivateBaysWithId(InitialCells);
+        currentGliderCells = cells;
 
         StartCoroutine(StepRoutine());
     }
@@ -67,13 +67,13 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         }
     }
 
-    HashSet<Vector3Int> SetupInitialSpaceships()
+    Dictionary<int, Vector3Int[]> SetupInitialSpaceships()
     {
-        HashSet<Vector3Int> initialCells = new HashSet<Vector3Int>();
+        Dictionary<int, Vector3Int[]> initialCells = new Dictionary<int, Vector3Int[]>();
         foreach (var config in initialSpaceships)
         {
-            Vector3Int[] initialCell = SpaceshipsManager.CreateGlider(config.position, config.direction, config.phase);
-            initialCells.UnionWith(initialCell);
+            (Vector3Int[] initialCell, int id) = SpaceshipsManager.CreateGlider(config.position, config.direction, config.phase);
+            initialCells[id] = initialCell;
         }
         return initialCells;
     }
@@ -92,30 +92,35 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         // 現在のセルを非アクティブに
         DeactivateCurrentCells();
 
-        // 次世代のセル位置と衝突しているグライダーの座標とIDを取得
-        GliderInfo nextCellsInfo = SpaceshipsManager.GetNextGenerationWithCollisions();
+        // 次世代のグライダーの位置と衝突しているグライダーの座標とIDを取得
+        GliderInfo gliderInfo = SpaceshipsManager.GetGliderInfo();
 
-        HashSet<Vector3Int> nextCells = nextCellsInfo.AllCells;
-        Dictionary<Vector3Int, List<int>> collisions = nextCellsInfo.Collisions;
-        Dictionary<int, Vector3Int[]> nextCellsWithId = nextCellsInfo.IDToCells;
+        HashSet<Vector3Int> gliderCells = gliderInfo.AllCells; // 今は使いません
+        Dictionary<Vector3Int, List<int>> gliderCollisions = gliderInfo.Collisions;
+        Dictionary<int, Vector3Int[]> gliderCellsWithId = gliderInfo.IDToCells;
 
-        HashSet<Vector3Int> activeCellsWithID = ActivateCellsWithId(nextCellsWithId);
+        // 衝突したグライダー削除し、ベイを作成
+        RemoveCollidedGliders(gliderCollisions, gliderCellsWithId);
+        Debug.Log($"Collisions found: {gliderCollisions.Count}");
+        CreateBays(gliderCollisions);
 
-        if (activeCellsWithID.Count == nextCells.Count)
-        {
-            Debug.Log("All active cells are accounted for in the next generation.");
-        }
-        else
-        {
-            Debug.Log(activeCellsWithID.Except(nextCells));
-        }
+        // 次世代のbaysの位置と衝突しているグライダーの座標を取得
+        BaysInfo baysInfo = SpaceshipsManager.GetBaysInfo();
+        HashSet<Vector3Int> BaysCells = baysInfo.AllCells; // 今は使いません
+        Dictionary<Vector3Int, List<int>> baysCollisions = baysInfo.Collisions;
+        Dictionary<int, Vector3Int[]> BaysCellsWithId = baysInfo.IDToCells;
 
-        // 新しいセルをアクティブに
-        // ActivateCells(nextCells);
-        // RemoveCollidedSpaceships(collisions);
-        // 現在のアクティブセルを更新
+        // 衝突したベイ削除し、ベイを作成
+        RemoveCollidedBays(baysCollisions, BaysCellsWithId);
 
-        // currentActiveCells = nextCells;
+
+        HashSet<Vector3Int> activeGlider = ActivateGlidersWithId(gliderCellsWithId);
+        HashSet<Vector3Int> activeBays = ActivateBaysWithId(BaysCellsWithId);
+
+
+
+        currentGliderCells = activeGlider;
+        currentBaysCells = activeBays;
     }
 
 
@@ -123,8 +128,17 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
 
     void DeactivateCurrentCells()
     {
-        foreach (var cell in currentActiveCells)
+        foreach (var cell in currentGliderCells)
         {
+            if (!GridUtils.IsInVisibleArea(cell)) continue; // return → continue
+            if (GRID.TryGetValue(cell, out GameObject cube))
+            {
+                StartCoroutine(AnimateScale(cube, Vector3.one, Vector3.zero));
+            }
+        }
+        foreach (var cell in currentBaysCells)
+        {
+            if (!GridUtils.IsInVisibleArea(cell)) continue; // return → continue
             if (GRID.TryGetValue(cell, out GameObject cube))
             {
                 StartCoroutine(AnimateScale(cube, Vector3.one, Vector3.zero));
@@ -132,25 +146,49 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         }
     }
 
-    private HashSet<Vector3Int> ActivateCellsWithId(Dictionary<int, Vector3Int[]> cells)
+    private HashSet<Vector3Int> ActivateGlidersWithId(Dictionary<int, Vector3Int[]> cells)
     {
         HashSet<Vector3Int> activeCells = new HashSet<Vector3Int>();
         foreach (var (id, cell) in cells)
         {
-            Color col = SpaceshipsManager.GetActiveGliders()[id].Color;
-            activeCells.UnionWith(cell);
-            Debug.Log($"Activating cells for Spaceship ID {id} with color {col}");
+            if (SpaceshipsManager.GetActiveGliders().ContainsKey(id))
+            {
+                Color col = SpaceshipsManager.GetActiveGliders()[id].Color;
+                foreach (Vector3Int position in cell)
+                {
+                    if (GridUtils.IsInVisibleArea(position)) // 表示領域のみ追加
+                    {
+                        activeCells.Add(position);
+                    }
+                    ActivateCellWithId(position, col);
+                }
+            }
+        }
+        return activeCells;
+    }
+
+    private HashSet<Vector3Int> ActivateBaysWithId(Dictionary<int, Vector3Int[]> cells)
+    {
+        HashSet<Vector3Int> activeCells = new HashSet<Vector3Int>();
+        foreach (var (id, cell) in cells)
+        {
+            Color col = Color.black;
             foreach (Vector3Int position in cell)
             {
+                if (GridUtils.IsInVisibleArea(position)) // 表示領域のみ追加
+                {
+                    activeCells.Add(position);
+                }
                 ActivateCellWithId(position, col);
             }
         }
-        currentActiveCells = activeCells; // 現在のアクティブセルを更新
         return activeCells;
     }
 
     void ActivateCellWithId(Vector3Int position, Color color)
     {
+        if (!GridUtils.IsInVisibleArea(position)) return;
+
         if (GRID.TryGetValue(position, out GameObject cube))
         {
             cube.SetActive(true);
@@ -171,8 +209,6 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         }
     }
 
-    
-
     void ActivateCells(HashSet<Vector3Int> cells)
     {
         foreach (var cell in cells)
@@ -180,31 +216,71 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
             if (GRID.TryGetValue(cell, out GameObject cube))
             {
                 cube.SetActive(true);
+                // 色を白に設定
+                Renderer renderer = cube.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    renderer.material.color = Color.white;
+                }
                 StartCoroutine(AnimateScale(cube, Vector3.zero, Vector3.one));
             }
         }
-        currentActiveCells = cells; 
+        // 表示領域のセルのみ追跡
+        currentGliderCells = cells.Where(cell => GridUtils.IsInVisibleArea(cell)).ToHashSet();
     }
 
+    
 
-    void RemoveCollidedSpaceships(Dictionary<Vector3Int, List<int>> collisions)
+
+    void RemoveCollidedGliders(Dictionary<Vector3Int, List<int>> collisions, Dictionary<int, Vector3Int[]> idToCells)
     {
         foreach (var collision in collisions)
         {
-            Vector3Int cell = collision.Key;
-            List<int> SpaceshipIDs = collision.Value;
-
-            // ここで衝突したスペースシップを削除
-            foreach (int id in SpaceshipIDs)
+            List<int> GliderIDs = collision.Value;
+            foreach (int id in GliderIDs)
             {
                 SpaceshipsManager.RemoveGlider(id);
-                Debug.Log($"Spaceship with ID {id} has been removed due to collision at cell {cell}.");
+                idToCells.Remove(id);
             }
+        }
+    }
 
-            // セルを非アクティブにする
-            if (GRID.TryGetValue(cell, out GameObject cube))
+    void RemoveCollidedBays(Dictionary<Vector3Int, List<int>> collisions, Dictionary<int, Vector3Int[]> idToCells)
+    {
+        foreach (var collision in collisions)
+        {
+            List<int> BaysIDs = collision.Value;
+            foreach (int id in BaysIDs)
             {
-                StartCoroutine(AnimateScale(cube, Vector3.one, Vector3.zero, () => cube.SetActive(false)));
+                SpaceshipsManager.RemoveBays(id); // このメソッドをSpaceshipsManagerに追加が必要
+                idToCells.Remove(id);
+            }
+        }
+    }
+
+    void CreateBays(Dictionary<Vector3Int, List<int>> collisions)
+    {
+        // 衝突に関わったグライダーIDを収集
+        HashSet<int> processedGliders = new HashSet<int>();
+        
+        foreach (var collision in collisions)
+        {
+            List<int> gliderIDs = collision.Value;
+            
+            // このグループの衝突がすでに処理済みかチェック
+            bool alreadyProcessed = gliderIDs.Any(id => processedGliders.Contains(id));
+            
+            if (!alreadyProcessed)
+            {
+                // 衝突したセルの中心位置を計算
+                Vector3Int centerPosition = collision.Key;
+                SpaceshipsManager.CreateBays(centerPosition, BaysDirection.Up);
+                
+                // 処理済みとしてマーク
+                foreach (int id in gliderIDs)
+                {
+                    processedGliders.Add(id);
+                }
             }
         }
     }
