@@ -15,6 +15,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
     [SerializeField] int depth = 30;
     [SerializeField] float stepInterval = 1.3f;
     [SerializeField] float animationDuration = 0.1f;
+    [SerializeField] Vector3 offset = new Vector3(-8, 0, -8);
     [System.Serializable]
     public struct InitialSpaceshipConfig
     {
@@ -55,7 +56,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
             {
                 for (int z = 0; z < depth; z++)
                 {
-                    Vector3 position = new Vector3(x, y, z);
+                    Vector3 position = new Vector3(x, y, z) + offset;
                     GameObject cube = Instantiate(cubePrefab, position, Quaternion.identity, this.transform);
                     Vector3Int gridPos = new Vector3Int(x, y, z);
                     GRID[gridPos] = cube;
