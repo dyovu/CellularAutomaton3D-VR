@@ -25,6 +25,12 @@ public static class SpaceshipConstants
         LeftForward
     }
 
+    public enum PlaneMode
+    {
+        XZ,
+        XY,
+    }
+
     public struct GliderInfo
     {
         public HashSet<Vector3Int> AllCells { get; set; }
@@ -32,6 +38,7 @@ public static class SpaceshipConstants
         public Dictionary<int, Vector3Int[]> IDToCells { get; set; }
     }
 
+    // これはx-z平面でのオフセットだから、x-y平面にしたい時には(x,z)→(x,y)に変換する
     public static readonly Dictionary<GliderPhase, HashSet<Vector3Int>> GliderOffsets =
         new Dictionary<GliderPhase, HashSet<Vector3Int>>()
         {

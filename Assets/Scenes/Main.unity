@@ -4972,10 +4972,8 @@ MonoBehaviour:
   depth: 6
   stepInterval: 1.3
   animationDuration: 0.1
-  initialSpaceships:
-  - position: {x: 0, y: 0, z: 0}
-    direction: 1
-    phase: 0
+  offset: {x: 0, y: 0, z: 0}
+  initialSpaceships: []
 --- !u!4 &723256119
 Transform:
   m_ObjectHideFlags: 0

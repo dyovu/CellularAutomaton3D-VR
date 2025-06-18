@@ -25,12 +25,22 @@ public class SpaceshipsManager
 
     public (Vector3Int[], int) CreateGlider(Vector3Int centerCell, GliderDirection direction, GliderPhase phase, SpaceshipType type = SpaceshipType.Glider)
     {
-        Glider newGlider = new Glider(nextGliderID, centerCell, direction, phase, Color.white);
+        PlaneMode planeMode = GetPlaneMode(centerCell);
+        Glider newGlider = new Glider(nextGliderID, centerCell, direction, phase, Color.white, planeMode);
         activeGliders[nextGliderID] = newGlider;
         Vector3Int[] initialCells = newGlider.GetCurrentPhaseCells();
         nextGliderID++;
         Debug.Log($"Glider created with ID: {newGlider.GetID()} at position {centerCell} in direction {direction} and phase {phase}");
         return (initialCells, newGlider.GetID());
+    }
+
+    /*
+    * 中心の座標がy=0ならx-y平面、y>0ならx-z平面とする
+    */
+    private PlaneMode GetPlaneMode(Vector3Int centerCell)
+    {
+        // 方向に応じて平面モードを決定
+        return centerCell.y == 0 ? PlaneMode.XY : PlaneMode.XZ;
     }
 
     public void CreateBays(Vector3Int forwardCell, BaysDirection direction)
@@ -41,7 +51,6 @@ public class SpaceshipsManager
         Debug.Log($"Bays created with ID: {newBays.GetID()} at position {forwardCell} in direction {direction}");
     }
     
-
 
     public GliderInfo GetGliderInfo()
     {
@@ -166,24 +175,6 @@ public class SpaceshipsManager
             Debug.LogWarning($"Bays does not exist with ID {id}.");
         }
     }
-
-    // // 全Gliderの次世代セル位置を返す
-    // public HashSet<Vector3Int> GetNextGenerationCells()
-    // {
-    //     HashSet<Vector3Int> allCells = new HashSet<Vector3Int>();
-
-    //     foreach (var Glider in activeGliders.Values)
-    //     {
-    //         Glider.UpdatePhase();
-    //         Vector3Int[] cells = Glider.GetCurrentPhaseCells();
-    //         if (cells != null && cells.Length > 0)
-    //         {
-    //             allCells.UnionWith(cells);
-    //         }
-    //     }
-
-    //     return allCells;
-    // }
 
     // 
     // つかうかも
