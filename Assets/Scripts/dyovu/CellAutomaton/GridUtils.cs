@@ -1,40 +1,16 @@
 using UnityEngine;
 
-// public static class GridUtils
-// {
-//     private static Vector3Int gridSize;
-
-//     public static void SetGridSize(Vector3Int size)
-//     {
-//         gridSize = size;
-//         Debug.Log($"Grid size set to: {gridSize}");
-//     }
-
-//     //
-//     // トーラス境界を考慮してセル位置を調整
-//     // public関数としてSpaceshipの中で呼び出すよ
-//     // 
-//     public static Vector3Int AdjustPosition(Vector3Int position)
-//     {
-//         int x = ((position.x % gridSize.x) + gridSize.x) % gridSize.x;
-//         int y = ((position.y % gridSize.y) + gridSize.y) % gridSize.y;
-//         int z = ((position.z % gridSize.z) + gridSize.z) % gridSize.z;
-//         return new Vector3Int(x, y, z);
-//     }
-// }
-
 public static class GridUtils
 {
     private static Vector3Int gridSize;
     private static readonly int GAP_SIZE = 3; // 追加
 
-    // 既存メソッド - そのまま
+    // Gridのサイズを取得
     public static void SetGridSize(Vector3Int size)
     {
         gridSize = size;
     }
 
-    // 既存メソッド - 修正
     public static Vector3Int AdjustPosition(Vector3Int position)
     {
         // 修正前のコードを以下に置き換え
@@ -44,7 +20,7 @@ public static class GridUtils
         return new Vector3Int(x, y, z);
     }
 
-    // 新規追加
+    // 面と面の空白を考慮した座標計算
     private static int AdjustCoordinate(int coord, int size)
     {
         if (coord < 0)
@@ -55,7 +31,7 @@ public static class GridUtils
             return coord;
     }
 
-    // 新規追加
+    // 面と面の境界にいるセル華道家の判定
     public static bool IsInVisibleArea(Vector3Int position)
     {
         return position.x >= 0 && position.x < gridSize.x &&
