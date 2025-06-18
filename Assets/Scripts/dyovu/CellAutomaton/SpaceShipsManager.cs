@@ -29,7 +29,7 @@ public class SpaceshipsManager
         activeGliders[nextGliderID] = newGlider;
         Vector3Int[] initialCells = newGlider.GetCurrentPhaseCells();
         nextGliderID++;
-        // Debug.Log($"Glider created with ID: {newGlider.GetID()} at position {centerCell} in direction {direction} and phase {phase}");
+        Debug.Log($"Glider created with ID: {newGlider.GetID()} at position {centerCell} in direction {direction} and phase {phase}");
         return (initialCells, newGlider.GetID());
     }
 
