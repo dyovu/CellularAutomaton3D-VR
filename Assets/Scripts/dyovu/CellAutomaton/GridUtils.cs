@@ -3,7 +3,7 @@ using UnityEngine;
 public static class GridUtils
 {
     private static Vector3Int gridSize;
-    private static readonly int GAP_SIZE = 3; // 追加
+    private static readonly int GAP_SIZE = 2; // 追加
 
     // Gridのサイズを取得
     public static void SetGridSize(Vector3Int size)
