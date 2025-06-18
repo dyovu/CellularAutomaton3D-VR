@@ -40,8 +40,9 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         // ここで全てのセルを非アクティブでinstantiateして初期化している
         InitializeGrid();
         // 初期セルをアクティブに変更
-        // HashSet<Vector3Int> InitialCells = SetupInitialSpaceships();
-        // ActivateCells(InitialCells);
+        Dictionary<int, Vector3Int[]> InitialCells = SetupInitialSpaceships();
+        HashSet<Vector3Int>initialCells = ActivateGlidersWithId(InitialCells);
+        currentGliderCells = initialCells;
 
         StartCoroutine(StepRoutine());
     }
@@ -117,11 +118,14 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         HashSet<Vector3Int> activeBays = ActivateBaysWithId(BaysCellsWithId);
 
 
-
         currentGliderCells = activeGlider;
         currentBaysCells = activeBays;
     }
 
+    public void CreateNewGlider(Vector3Int CenterPosition)
+    {
+        (Vector3Int[] initialCell, int id)  = SpaceshipsManager.CreateGlider(CenterPosition, GliderDirection.RightBackward , GliderPhase.Phase1);
+    }
 
 
     void DeactivateCurrentCells()
@@ -144,12 +148,9 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         }
     }
 
-    public void CreateNewGlider(Vector3Int CenterPosition)
-    {
-        Vector3Int[] initialCell = SpaceshipsManager.CreateGlider(CenterPosition, GliderDirection.RightBackward , GliderPhase.Phase1);
-    }
+    
 
-    private HashSet<Vector3Int> ActivateCellsWithId(Dictionary<int, Vector3Int[]> cells)
+    private HashSet<Vector3Int> ActivateGlidersWithId(Dictionary<int, Vector3Int[]> cells)
     {
         HashSet<Vector3Int> activeCells = new HashSet<Vector3Int>();
         foreach (var (id, cell) in cells)
