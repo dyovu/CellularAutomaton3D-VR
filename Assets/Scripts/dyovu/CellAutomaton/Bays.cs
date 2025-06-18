@@ -93,36 +93,23 @@ public class Bays
 
     private Vector3Int RotateCell(Vector3Int offset_cell)
     {
-        Vector3Int result;
-        switch (direction)
+        Vector3Int result = direction switch
         {
-            case BaysDirection.Up:
-                result = new Vector3Int(offset_cell.x, offset_cell.y, offset_cell.z);
-                break;
-            case BaysDirection.Down:
-                result = new Vector3Int(-offset_cell.x, -offset_cell.y, offset_cell.z);
-                break;
-            default:
-                result = new Vector3Int(offset_cell.x, offset_cell.y, offset_cell.z);
-                break;
-        }
-        // forwardCellを加えるのはここで
-        return new Vector3Int(forwardCell.x + result.x, forwardCell.y + result.y, forwardCell.z + result.z);
+            BaysDirection.Down => new Vector3Int(-offset_cell.x, -offset_cell.y, offset_cell.z),
+            _ => new Vector3Int(offset_cell.x, offset_cell.y, offset_cell.z)
+        };
+        
+        return forwardCell + result;
     }
     
 
     private Vector3Int RotateForwardOffset(Vector3Int offset)
     {
-        // Baysの方向に応じてオフセットを回転させる
-        switch (direction)
+        return direction switch
         {
-            case BaysDirection.Up:
-                return offset; // そのまま
-            case BaysDirection.Down:
-                return new Vector3Int(offset.x, -offset.y, offset.z); // 反対向き
-            default:
-                return offset; // デフォルトはそのまま
-        }
+            BaysDirection.Down => new Vector3Int(offset.x, -offset.y, offset.z),
+            _ => offset
+        };
     }
 
 }

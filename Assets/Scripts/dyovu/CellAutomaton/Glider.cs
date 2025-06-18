@@ -42,6 +42,10 @@ namespace dyovu.Glider
                     * // 中心セルの移動もdirectionを考慮して
                     */
                     centerCell += RotateCenterOffset(new Vector3Int(0, 0, -1));
+                    if (plane == PlaneMode.XY)
+                    {
+                        centerCell = RotateOffsetToXY(centerCell); // x-z平面からx-y平面に変換
+                    }
                     break;
                 case GliderPhase.Phase2:
                     phase = GliderPhase.Phase3;
@@ -78,51 +82,32 @@ namespace dyovu.Glider
         // ディレクションを考慮したセルの位置調整
         private Vector3Int RotateCells(Vector3Int offset_cell)
         {
-            Vector3Int rotatedOffset;
-            switch (direction)
+            Vector3Int rotatedOffset = direction switch
             {
-                case GliderDirection.RightBackward:
-                    rotatedOffset = new Vector3Int(centerCell.x + offset_cell.x, centerCell.y + offset_cell.y, centerCell.z + offset_cell.z);
-                    break;
-                case GliderDirection.RightForward:
-                    rotatedOffset = new Vector3Int(centerCell.x - offset_cell.z, centerCell.y + offset_cell.y, centerCell.z + offset_cell.x);
-                    break;
-                case GliderDirection.LeftForward:
-                    rotatedOffset = new Vector3Int(centerCell.x - offset_cell.x, centerCell.y + offset_cell.y, centerCell.z - offset_cell.z);
-                    break;
-                case GliderDirection.LeftBackward:
-                    rotatedOffset = new Vector3Int(centerCell.x + offset_cell.z, centerCell.y + offset_cell.y, centerCell.z - offset_cell.x);
-                    break;
-                default:
-                    rotatedOffset = new Vector3Int(centerCell.x + offset_cell.x, centerCell.y + offset_cell.y, centerCell.z + offset_cell.z);
-                    break;
-            }
-            return plane == PlaneMode.XY ?RotateOffsetToXY(rotatedOffset) : rotatedOffset;
+                GliderDirection.RightBackward => new Vector3Int(offset_cell.x, offset_cell.y, offset_cell.z),
+                GliderDirection.RightForward => new Vector3Int(-offset_cell.z, offset_cell.y, offset_cell.x),
+                GliderDirection.LeftForward => new Vector3Int(-offset_cell.x, offset_cell.y, -offset_cell.z),
+                GliderDirection.LeftBackward => new Vector3Int(offset_cell.z, offset_cell.y, -offset_cell.x),
+                _ => new Vector3Int(offset_cell.x, offset_cell.y, offset_cell.z)
+            };
+
+            Vector3Int finalPosition = centerCell + rotatedOffset;
+            return plane == PlaneMode.XY ? RotateOffsetToXY(finalPosition) : finalPosition;
         }
 
         // ディレクションを考慮した中心セルの位置調整
         private Vector3Int RotateCenterOffset(Vector3Int centerOffset)
         {
-            Vector3Int rotatedOffset;
-            switch (direction)
+            Vector3Int rotatedOffset = direction switch
             {
-                case GliderDirection.RightBackward:
-                    rotatedOffset = new Vector3Int(centerOffset.x, centerOffset.y, centerOffset.z);
-                    break;
-                case GliderDirection.RightForward:
-                    rotatedOffset = new Vector3Int(-centerOffset.z, centerOffset.y, centerOffset.x);
-                    break;
-                case GliderDirection.LeftForward:
-                    rotatedOffset = new Vector3Int(-centerOffset.x, centerOffset.y, -centerOffset.z);
-                    break;
-                case GliderDirection.LeftBackward:
-                    rotatedOffset = new Vector3Int(centerOffset.z, centerOffset.y, -centerOffset.x);
-                    break;
-                default:
-                    rotatedOffset = new Vector3Int(centerOffset.x, centerOffset.y, centerOffset.z);
-                    break;
-            }
-            return plane == PlaneMode.XY ?RotateOffsetToXY(rotatedOffset) : rotatedOffset;
+                GliderDirection.RightBackward => new Vector3Int(centerOffset.x, centerOffset.y, centerOffset.z),
+                GliderDirection.RightForward => new Vector3Int(-centerOffset.z, centerOffset.y, centerOffset.x),
+                GliderDirection.LeftForward => new Vector3Int(-centerOffset.x, centerOffset.y, -centerOffset.z),
+                GliderDirection.LeftBackward => new Vector3Int(centerOffset.z, centerOffset.y, -centerOffset.x),
+                _ => new Vector3Int(centerOffset.x, centerOffset.y, centerOffset.z)
+            };
+
+            return plane == PlaneMode.XY ? RotateOffsetToXY(rotatedOffset) : rotatedOffset;
         }
 
         // x-z平面のオフセットをx-y平面のオフセットに変換するためのヘルパー関数
