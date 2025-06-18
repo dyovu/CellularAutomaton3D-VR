@@ -26,7 +26,7 @@ public class SpaceshipsManager
     public (Vector3Int[], int) CreateGlider(Vector3Int centerCell, GliderDirection direction, GliderPhase phase, SpaceshipType type = SpaceshipType.Glider)
     {
         PlaneMode planeMode = GetPlaneMode(centerCell);
-        Glider newGlider = new Glider(nextGliderID, centerCell, direction, phase, Color.white, planeMode);
+        Glider newGlider = new Glider(nextGliderID, centerCell, direction, phase, Color.blue, planeMode);
         activeGliders[nextGliderID] = newGlider;
         Vector3Int[] initialCells = newGlider.GetCurrentPhaseCells();
         nextGliderID++;

@@ -16,6 +16,7 @@ namespace dyovu.Glider
         private GliderDirection direction;
         private Color GliderColor;
         private PlaneMode plane;
+        private int baseZCoordinate;
 
         public Glider(int id, Vector3Int centerCell, GliderDirection direction, GliderPhase phase, Color color, PlaneMode plane)
         {
@@ -26,6 +27,7 @@ namespace dyovu.Glider
             this.direction = direction;
             this.GliderColor = color;
             this.plane = plane;
+            this.baseZCoordinate = centerCell.z; // 初期のz座標を保存
         }
 
         public int GetID() { return ID; }
@@ -41,11 +43,8 @@ namespace dyovu.Glider
                     /*
                     * // 中心セルの移動もdirectionを考慮して
                     */
-                    centerCell += RotateCenterOffset(new Vector3Int(0, 0, -1));
-                    if (plane == PlaneMode.XY)
-                    {
-                        centerCell = RotateOffsetToXY(centerCell); // x-z平面からx-y平面に変換
-                    }
+                    Vector3Int RotateOffset = RotateCenterOffset(new Vector3Int(0, 0, -1));
+                    centerCell += plane == PlaneMode.XY ? RotateCenterOffsetToXY(RotateOffset) : RotateOffset;
                     break;
                 case GliderPhase.Phase2:
                     phase = GliderPhase.Phase3;
@@ -71,9 +70,10 @@ namespace dyovu.Glider
             {
                 for (int i = 0; i < 2; i++) // 上下二段
                 {
-                    Vector3Int ofset_cell = new Vector3Int(offset.x, i, offset.z);
-                    Vector3Int rotatedCell = RotateCells(ofset_cell);
-                    currentGenerationCells[index * 2 + i] = AdjustPosition(rotatedCell);
+                    Vector3Int offset_cell = new Vector3Int(offset.x, i, offset.z);
+                    Vector3Int rotatedCell = RotateCells(offset_cell);
+                    Vector3Int finalPosition = centerCell + rotatedCell;
+                    currentGenerationCells[index * 2 + i] = AdjustPosition(finalPosition);
                 }
             }
             return currentGenerationCells;
@@ -90,9 +90,8 @@ namespace dyovu.Glider
                 GliderDirection.LeftBackward => new Vector3Int(offset_cell.z, offset_cell.y, -offset_cell.x),
                 _ => new Vector3Int(offset_cell.x, offset_cell.y, offset_cell.z)
             };
-
-            Vector3Int finalPosition = centerCell + rotatedOffset;
-            return plane == PlaneMode.XY ? RotateOffsetToXY(finalPosition) : finalPosition;
+            Vector3Int ConvertPlane = plane == PlaneMode.XY ? RotateOffsetToXY(rotatedOffset) : rotatedOffset;
+            return ConvertPlane;
         }
 
         // ディレクションを考慮した中心セルの位置調整
@@ -107,13 +106,19 @@ namespace dyovu.Glider
                 _ => new Vector3Int(centerOffset.x, centerOffset.y, centerOffset.z)
             };
 
-            return plane == PlaneMode.XY ? RotateOffsetToXY(rotatedOffset) : rotatedOffset;
+            return rotatedOffset;
         }
 
-        // x-z平面のオフセットをx-y平面のオフセットに変換するためのヘルパー関数
-        public static Vector3Int RotateOffsetToXY(Vector3Int offset)
+        // x-z平面のオフセットをx-y平面のオフセットに変換、中心以外の点
+        private Vector3Int RotateOffsetToXY(Vector3Int offset)
         {
             return new Vector3Int(offset.x, offset.z, offset.y);
+        }
+
+        // x-z平面のオフセットをx-y平面のオフセットに変換、中心の点
+        private Vector3Int RotateCenterOffsetToXY(Vector3Int offset)
+        {
+            return new Vector3Int(offset.x, offset.z, 0);
         }
     }
     
