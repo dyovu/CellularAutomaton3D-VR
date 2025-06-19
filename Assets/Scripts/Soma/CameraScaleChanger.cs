@@ -3,6 +3,25 @@ using UnityEngine;
 public class CameraScaleChanger : MonoBehaviour
 {
     [SerializeField] private OVRPlayerController playerController;
+    private Material _material;
+
+    private void Start()
+    {
+        _material = GetComponent<Renderer>().material;
+    }
+
+    public void OnHover()
+    {
+        _material.EnableKeyword("_EMISSION");
+        _material.SetColor("_EmissionColor", Color.white * 1.0f);
+    }
+
+    public void OnUnhover()
+    {
+        _material.DisableKeyword("_EMISSION");
+        _material.SetColor("_EmissionColor", Color.black);
+    }
+
 
     public void ChangeScaleToThree()
     {

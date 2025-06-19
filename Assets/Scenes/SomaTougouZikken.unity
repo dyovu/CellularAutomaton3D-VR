@@ -7420,7 +7420,7 @@ GameObject:
   - component: {fileID: 1060567667}
   - component: {fileID: 1060567666}
   - component: {fileID: 1060567665}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ChangeScaleToEight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7436,8 +7436,8 @@ Transform:
   m_GameObject: {fileID: 1060567663}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.612319, y: -13.34, z: -4.64}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -6.612319, y: -12.769, z: -4.14}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1236730944}
@@ -7470,10 +7470,34 @@ MonoBehaviour:
   _interactableView: {fileID: 1060567668}
   _whenHover:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1060567667}
+        m_TargetAssemblyTypeName: CameraScaleChanger, Assembly-CSharp
+        m_MethodName: OnHover
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _whenUnhover:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1060567667}
+        m_TargetAssemblyTypeName: CameraScaleChanger, Assembly-CSharp
+        m_MethodName: OnUnhover
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _whenSelect:
     m_PersistentCalls:
       m_Calls:
@@ -7874,7 +7898,7 @@ GameObject:
   - component: {fileID: 1146833508}
   - component: {fileID: 1146833507}
   - component: {fileID: 1146833513}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ChangeScaleToThree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7924,10 +7948,34 @@ MonoBehaviour:
   _interactableView: {fileID: 1146833509}
   _whenHover:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1146833513}
+        m_TargetAssemblyTypeName: CameraScaleChanger, Assembly-CSharp
+        m_MethodName: OnHover
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _whenUnhover:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1146833513}
+        m_TargetAssemblyTypeName: CameraScaleChanger, Assembly-CSharp
+        m_MethodName: OnUnhover
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _whenSelect:
     m_PersistentCalls:
       m_Calls:
@@ -8536,7 +8584,7 @@ Transform:
   m_GameObject: {fileID: 1236730943}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.59, y: 16.21, z: 16.39}
+  m_LocalPosition: {x: 3.59, y: 16.21, z: 14.52}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9920,7 +9968,7 @@ GameObject:
   - component: {fileID: 1483166743}
   - component: {fileID: 1483166742}
   - component: {fileID: 1483166741}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ChangeScaleToFive
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9936,8 +9984,8 @@ Transform:
   m_GameObject: {fileID: 1483166739}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.612319, y: -13.34, z: -7.06}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -6.612319, y: -13.061, z: -7.06}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1236730944}
@@ -9970,10 +10018,34 @@ MonoBehaviour:
   _interactableView: {fileID: 1483166744}
   _whenHover:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1483166743}
+        m_TargetAssemblyTypeName: CameraScaleChanger, Assembly-CSharp
+        m_MethodName: OnHover
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _whenUnhover:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1483166743}
+        m_TargetAssemblyTypeName: CameraScaleChanger, Assembly-CSharp
+        m_MethodName: OnUnhover
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _whenSelect:
     m_PersistentCalls:
       m_Calls:
