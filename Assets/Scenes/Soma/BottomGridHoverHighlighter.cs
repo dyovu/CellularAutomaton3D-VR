@@ -1,7 +1,7 @@
 using UnityEngine;
 using Oculus.Interaction;
 
-public class GridHoverHighlighter : MonoBehaviour
+public class BottomGridHoverHighlighter : MonoBehaviour
 {
     [SerializeField] private Transform cubePlane; // スケール(6,1,6)のCube
     [SerializeField] private Transform highlightPrefab;
@@ -19,8 +19,19 @@ public class GridHoverHighlighter : MonoBehaviour
     {
         if (rayInteractor.CollisionInfo.HasValue)
         {
+            var collisionInfo = rayInteractor.CollisionInfo.Value;
+            Vector3 hitNormal = collisionInfo.Normal;
+            Vector3 planeUp = cubePlane.up; // cubePlaneの上方向ベクトル
+
+            if (Vector3.Dot(hitNormal, planeUp) < 0.1f) // 衝突面の法線がcubePlaneの上方向と十分に近いかチェック
+            {
+                highlightPrefab.gameObject.SetActive(false); // 法線が違う場合はハイライトを非表示
+                return;
+            }
+
             Vector3 hitPoint = rayInteractor.CollisionInfo.Value.Point;
             // Debug.Log($"[debug]Hit Point: {hitPoint}");
+
 
             Vector3 localPoint = cubePlane.InverseTransformPoint(hitPoint); // (-0.5 ~ 0.5)
             Debug.Log($"[debug]Local Point: {localPoint}");
