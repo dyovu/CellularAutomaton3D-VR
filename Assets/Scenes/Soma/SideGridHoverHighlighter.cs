@@ -63,7 +63,7 @@ public class SideGridHoverHighlighter : MonoBehaviour
 
                 // グリッドサイズに応じてスケールを調整
                 Vector3 planeScale = cubePlane.localScale;
-                highlightPrefab.localScale = new Vector3(1f / planeScale.x, 0.01f, 1f / planeScale.z); // ハイライトのスケールを設定
+                highlightPrefab.localScale = new Vector3(1f / planeScale.x, 1f / planeScale.y, 1f / planeScale.y); // ハイライトのスケールを設定
 
                 highlightPrefab.localPosition = new Vector3(snappedX, snappedY, 0.7f);
 
