@@ -71,7 +71,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         Dictionary<int, Vector3Int[]> initialCells = new Dictionary<int, Vector3Int[]>();
         foreach (var config in initialSpaceships)
         {
-            (Vector3Int[] initialCell, int id) = SpaceshipsManager.CreateGlider(config.position, config.direction, config.phase);
+            (Vector3Int[] initialCell, int id) = SpaceshipsManager.CreateGlider(config.position);
             initialCells[id] = initialCell;
         }
         return initialCells;
@@ -123,7 +123,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
 
     public void CreateNewGlider(Vector3Int CenterPosition)
     {
-        (Vector3Int[] initialCell, int id)  = SpaceshipsManager.CreateGlider(CenterPosition, GliderDirection.RightBackward , GliderPhase.Phase1);
+        (Vector3Int[] initialCell, int id)  = SpaceshipsManager.CreateGlider(CenterPosition);
     }
 
 

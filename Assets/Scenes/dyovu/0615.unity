@@ -533,7 +533,16 @@ MonoBehaviour:
   - position: {x: 10, y: 6, z: 20}
     direction: 0
     phase: 0
+  - position: {x: 15, y: 10, z: 19}
+    direction: 0
+    phase: 0
   - position: {x: 15, y: 0, z: 19}
+    direction: 0
+    phase: 0
+  - position: {x: 19, y: 5, z: 2}
+    direction: 0
+    phase: 0
+  - position: {x: 7, y: 28, z: 4}
     direction: 0
     phase: 0
 --- !u!4 &1903441912

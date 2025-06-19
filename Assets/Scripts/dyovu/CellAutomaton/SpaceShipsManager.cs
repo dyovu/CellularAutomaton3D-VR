@@ -23,14 +23,15 @@ public class SpaceshipsManager
     public Dictionary<int, Bays> GetActiveBays() => activeBays;
 
 
-    public (Vector3Int[], int) CreateGlider(Vector3Int centerCell, GliderDirection direction, GliderPhase phase, SpaceshipType type = SpaceshipType.Glider)
+    public (Vector3Int[], int) CreateGlider(Vector3Int centerCell, SpaceshipType type = SpaceshipType.Glider)
     {
         PlaneMode planeMode = GetPlaneMode(centerCell);
-        Glider newGlider = new Glider(nextGliderID, centerCell, direction, phase, Color.blue, planeMode);
+        GliderDirection direction = GetRandomDirection(); 
+        Glider newGlider = new Glider(nextGliderID, centerCell, direction, GliderPhase.Phase1, Color.blue, planeMode);
         activeGliders[nextGliderID] = newGlider;
         Vector3Int[] initialCells = newGlider.GetCurrentPhaseCells();
         nextGliderID++;
-        Debug.Log($"Glider created with ID: {newGlider.GetID()} at position {centerCell} in direction {direction} and phase {phase}");
+        Debug.Log($"Glider created with ID: {newGlider.GetID()} at position {centerCell} in direction {direction}");
         return (initialCells, newGlider.GetID());
     }
 
@@ -42,6 +43,21 @@ public class SpaceshipsManager
         // 方向に応じて平面モードを決定
         return centerCell.y == 0 ? PlaneMode.XY : PlaneMode.XZ;
     }
+
+    private GliderDirection GetRandomDirection()
+    {
+        GliderDirection[] directions = (GliderDirection[])System.Enum.GetValues(typeof(GliderDirection));
+        return directions[Random.Range(0, directions.Length)];
+    }
+
+    // private GliderPhase GetRandomPhase()
+    // {
+    //     GliderPhase[] phases = (GliderPhase[])System.Enum.GetValues(typeof(GliderPhase));
+    //     return phases[Random.Range(0, phases.Length)];
+        
+    // }
+
+
 
     public void CreateBays(Vector3Int forwardCell, BaysDirection direction)
     {
