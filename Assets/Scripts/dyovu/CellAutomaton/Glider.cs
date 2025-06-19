@@ -16,9 +16,9 @@ namespace dyovu.Glider
         private GliderDirection direction;
         private Color GliderColor;
         private PlaneMode plane;
-        private int baseZCoordinate;
+        private HashSet<int> Beat;
 
-        public Glider(int id, Vector3Int centerCell, GliderDirection direction, GliderPhase phase, Color color, PlaneMode plane)
+        public Glider(int id, Vector3Int centerCell, GliderDirection direction, GliderPhase phase, Color color, PlaneMode plane, HashSet<int> beat = null)
         {
             ID = id;
             generation = 0;
@@ -27,7 +27,7 @@ namespace dyovu.Glider
             this.direction = direction;
             this.GliderColor = color;
             this.plane = plane;
-            this.baseZCoordinate = centerCell.z; // 初期のz座標を保存
+            this.Beat = beat ?? new HashSet<int>(){4, 8, 12,16};
         }
 
         public int GetID() { return ID; }
