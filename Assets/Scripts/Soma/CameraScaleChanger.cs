@@ -4,9 +4,19 @@ public class CameraScaleChanger : MonoBehaviour
 {
     [SerializeField] private OVRPlayerController playerController;
 
-    public void ChangeScaleToFour()
+    public void ChangeScaleToThree()
     {
-        playerController.transform.localScale = new Vector3(4f, 4f, 4f);
-        Debug.Log("Camera scale changed to 4");
+        playerController.transform.localScale = new Vector3(3f, 3f, 3f);
     }
+
+    public void ChangeScaleToFive()
+    {
+        playerController.transform.localScale = new Vector3(5f, 5f, 5f);
+    }
+
+    public void ChangeScaleToEight()
+    {
+        playerController.transform.localScale = new Vector3(8f, 8f, 8f);
+    }
+
 }
