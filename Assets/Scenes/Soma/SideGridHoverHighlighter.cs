@@ -70,5 +70,9 @@ public class SideGridHoverHighlighter : MonoBehaviour
                 highlightPrefab.gameObject.SetActive(true);
             }
         }
+        else
+        {
+            highlightPrefab.gameObject.SetActive(false);
+        }
     }
 }
