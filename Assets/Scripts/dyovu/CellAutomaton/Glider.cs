@@ -43,20 +43,22 @@ namespace dyovu.Glider
                     /*
                     * // 中心セルの移動もdirectionを考慮して
                     */
-                    Vector3Int RotateOffset = RotateCenterOffset(new Vector3Int(0, 0, -1));
-                    centerCell += plane == PlaneMode.XY ? RotateCenterOffsetToXY(RotateOffset) : RotateOffset;
+                    Vector3Int RotateOffsetPhase1 = RotateCenterOffset(new Vector3Int(0, 0, -1));
+                    centerCell += plane == PlaneMode.XY ? RotateOffsetToXY(RotateOffsetPhase1) : RotateOffsetPhase1;
                     break;
                 case GliderPhase.Phase2:
                     phase = GliderPhase.Phase3;
                     break;
                 case GliderPhase.Phase3:
                     phase = GliderPhase.Phase4;
-                    centerCell += RotateCenterOffset(new Vector3Int(1, 0, 0));
+                    Vector3Int RotateOffsetPhase3 = RotateCenterOffset(new Vector3Int(1, 0, 0));
+                    centerCell += plane == PlaneMode.XY ? RotateOffsetToXY(RotateOffsetPhase3) : RotateOffsetPhase3;
                     break;
                 case GliderPhase.Phase4:
                     phase = GliderPhase.Phase1;
                     break;
             }
+            Debug.Log($"Glider ID: {ID} updated to phase: {phase} at position: {centerCell}");
             centerCell = AdjustPosition(centerCell); // トーラス境界を考慮して位置調整
             generation++;
         }

@@ -27,12 +27,11 @@ public class SpaceshipsManager
     {
         PlaneMode planeMode = GetPlaneMode(centerCell);
         GliderDirection direction = GetRandomDirection(); 
-        GliderPhase phase = GetRandomPhase();
-        Glider newGlider = new Glider(nextGliderID, centerCell, direction, phase, Color.blue, planeMode);
+        Glider newGlider = new Glider(nextGliderID, centerCell, direction, GliderPhase.Phase1, Color.blue, planeMode);
         activeGliders[nextGliderID] = newGlider;
         Vector3Int[] initialCells = newGlider.GetCurrentPhaseCells();
         nextGliderID++;
-        Debug.Log($"Glider created with ID: {newGlider.GetID()} at position {centerCell} in direction {direction} and phase {phase}");
+        Debug.Log($"Glider created with ID: {newGlider.GetID()} at position {centerCell} in direction {direction}");
         return (initialCells, newGlider.GetID());
     }
 
@@ -51,12 +50,12 @@ public class SpaceshipsManager
         return directions[Random.Range(0, directions.Length)];
     }
 
-    private GliderPhase GetRandomPhase()
-    {
-        GliderPhase[] phases = (GliderPhase[])System.Enum.GetValues(typeof(GliderPhase));
-        return phases[Random.Range(0, phases.Length)];
+    // private GliderPhase GetRandomPhase()
+    // {
+    //     GliderPhase[] phases = (GliderPhase[])System.Enum.GetValues(typeof(GliderPhase));
+    //     return phases[Random.Range(0, phases.Length)];
         
-    }
+    // }
 
 
 
