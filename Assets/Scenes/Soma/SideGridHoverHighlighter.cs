@@ -3,76 +3,62 @@ using Oculus.Interaction;
 
 public class SideGridHoverHighlighter : MonoBehaviour
 {
-    [SerializeField] private Transform cubePlane; // スケール(6,1,6)のCube
+    [SerializeField] private Transform cubePlane;
     [SerializeField] private Transform highlightPrefab;
-    [SerializeField] private RayInteractor rayInteractor;
     [SerializeField] private ToroidalBoundsCellularAutomaton automaton;
-    // [SerializeField] private int gridSize = 6;
+    [SerializeField] private RayInteractor rayInteractor;
 
     private int gridSize;
+    private Vector3Int lastGridPosition;
+
+    private bool isHovering = false;
 
     private void Start()
     {
         gridSize = (int)cubePlane.localScale.x;
+        highlightPrefab.gameObject.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OnHover()
     {
-        if (rayInteractor.CollisionInfo.HasValue)
+        isHovering = true;
+        highlightPrefab.gameObject.SetActive(true); // 最初に表示
+    }
+
+    public void OnUnhover()
+    {
+        isHovering = false;
+        highlightPrefab.gameObject.SetActive(false);
+    }
+
+    public void OnSelect()
+    {
+        automaton.CreateNewGlider(lastGridPosition);
+    }
+
+    private void Update()
+    {
+        if (isHovering && rayInteractor.CollisionInfo.HasValue)
         {
-            var collisionInfo = rayInteractor.CollisionInfo.Value;
-            Vector3 hitNormal = collisionInfo.Normal;
-            Vector3 planeUp = cubePlane.up; // cubePlaneの上方向ベクトル
-
-            if (Vector3.Dot(hitNormal, planeUp) > 0.9f) // 衝突面の法線がcubePlaneの上方向と十分に近いかチェック
-            {
-                highlightPrefab.gameObject.SetActive(false); // 法線が違う場合はハイライトを非表示
-                return;
-            }
-
-            // rayInteractorの衝突情報からヒットポイントを取得
-            {
-                Vector3 hitPoint = rayInteractor.CollisionInfo.Value.Point;
-                // Debug.Log($"[debug]Hit Point: {hitPoint}");
-
-                Vector3 localPoint = cubePlane.InverseTransformPoint(hitPoint); // (-0.5 ~ 0.5)
-                Debug.Log($"[debug]Local Point: {localPoint}");
-
-
-                float normalizedX = localPoint.x + 0.5f; // 0 ~ 1
-                int gridX = Mathf.Clamp(Mathf.FloorToInt(normalizedX * gridSize), 0, gridSize - 1);
-
-                float normalizedY = localPoint.y + 0.5f; // 0 ~ 1
-                int gridY = Mathf.Clamp(Mathf.FloorToInt(normalizedY * gridSize), 0, gridSize - 1);
-
-                float cellSize = 1f / gridSize;
-
-                float snappedX = -0.5f + (gridX + 0.5f) * cellSize;
-                float snappedY = -0.5f + (gridY + 0.5f) * cellSize;
-
-                if (OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
-                {
-                    Debug.Log($"[TRIGGER] gridY: {gridY}, gridX: {gridX}");
-                    Debug.Log($"[TRIGGER] Glider placement at local (X: {snappedX}, Y: {snappedY})");
-                    Vector3 snappedWorldPos = cubePlane.TransformPoint(new Vector3(snappedX, snappedY, 0f));
-                    Debug.Log($"[TRIGGER] Glider placement at world position: {snappedWorldPos}");
-                    Vector3Int snappedGridPos = new Vector3Int(gridX, gridY, 0);
-                    automaton.CreateNewGlider(snappedGridPos);
-                }
-
-                // グリッドサイズに応じてスケールを調整
-                Vector3 planeScale = cubePlane.localScale;
-                highlightPrefab.localScale = new Vector3(1f / planeScale.x, 1f / planeScale.y, 1f / planeScale.y); // ハイライトのスケールを設定
-
-                highlightPrefab.localPosition = new Vector3(snappedX, snappedY, 0.7f);
-
-                highlightPrefab.gameObject.SetActive(true);
-            }
+            UpdateHighlight(rayInteractor.CollisionInfo.Value.Point);
         }
-        else
-        {
-            highlightPrefab.gameObject.SetActive(false);
-        }
+    }
+
+    private void UpdateHighlight(Vector3 hitPoint)
+    {
+        Vector3 localPoint = cubePlane.InverseTransformPoint(hitPoint);
+        float normalizedX = localPoint.x + 0.5f;
+        float normalizedY = localPoint.y + 0.5f;
+
+        int gridX = Mathf.Clamp(Mathf.FloorToInt(normalizedX * gridSize), 0, gridSize - 1);
+        int gridY = Mathf.Clamp(Mathf.FloorToInt(normalizedY * gridSize), 0, gridSize - 1);
+        lastGridPosition = new Vector3Int(gridX, gridY, 0);
+
+        float cellSize = 1f / gridSize;
+        float snappedX = -0.5f + (gridX + 0.5f) * cellSize;
+        float snappedY = -0.5f + (gridY + 0.5f) * cellSize;
+
+        highlightPrefab.localScale = new Vector3(1f / cubePlane.localScale.x, 1f / cubePlane.localScale.y, 1f / cubePlane.localScale.y);
+        highlightPrefab.localPosition = new Vector3(snappedX, snappedY, 0.7f);
     }
 }
