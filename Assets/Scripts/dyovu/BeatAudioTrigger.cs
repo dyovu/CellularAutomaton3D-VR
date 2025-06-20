@@ -20,6 +20,8 @@ public class BeatAudioTrigger : MonoBehaviour
 
     private BeatClock clock;
     private AudioSource _audioSource;
+    private IDisposable beatSubscription; // 購読を管理
+    private bool isListening = false; // 現在の購読状態
 
     private void Start()
     {
@@ -30,26 +32,41 @@ public class BeatAudioTrigger : MonoBehaviour
             _audioSource = gameObject.AddComponent<AudioSource>();
         }
 
-        // BeatClockの取得
+        // BeatClockの取得（ただし自動開始はしない）
         clock = FindFirstObjectByType<BeatClock>();
-        if (clock != null)
-        {
-            Initialize(clock);
-        }
-        else
+        if (clock == null)
         {
             Debug.LogError("BeatClock not found in the scene. Please ensure it is present.");
         }
     }
 
-    public void Initialize(BeatClock clock)
+    // ビート購読を開始
+    public void StartListening()
     {
-        clock.OnBeat
+        if (clock == null || isListening) return;
+
+        beatSubscription = clock.OnBeat
             .Where(beat => triggerBeats.Contains(beat) || beat % beatDivisor == remain)
             .Subscribe(beat => ReactToBeat(beat))
             .AddTo(this);
+        
+        isListening = true;
+        Debug.Log("BeatAudioTrigger started listening");
     }
 
+    // ビート購読を停止
+    public void StopListening()
+    {
+        if (!isListening) return;
+
+        beatSubscription?.Dispose();
+        beatSubscription = null;
+        isListening = false;
+        Debug.Log("BeatAudioTrigger stopped listening");
+    }
+
+    // 購読状態を取得
+    public bool IsListening => isListening;
 
     private void ReactToBeat(int beat)
     {
@@ -85,24 +102,5 @@ public class BeatAudioTrigger : MonoBehaviour
         }
     }
 
-    // 実行時にトリガービートを変更するメソッド
-    public void SetTriggerBeats(List<int> newTriggerBeats)
-    {
-        triggerBeats = newTriggerBeats;
-    }
 
-    // 特定のビートを追加
-    public void AddTriggerBeat(int beat)
-    {
-        if (!triggerBeats.Contains(beat))
-        {
-            triggerBeats.Add(beat);
-        }
-    }
-
-    // 特定のビートを削除
-    public void RemoveTriggerBeat(int beat)
-    {
-        triggerBeats.Remove(beat);
-    }
 }

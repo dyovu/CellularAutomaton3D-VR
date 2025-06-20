@@ -25,6 +25,9 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
     [SerializeField] private Color gliderColor = new Color(169f / 255f, 169f / 255f, 169f / 255f);
     [SerializeField] private Color baysColor = new Color(119f / 255f, 136f / 255f, 153f / 255f);
 
+    // セルの更新でビートを刻む
+    [SerializeField] private BeatAudioTrigger beatAudioTrigger;
+
 
     // Gliderの生成、衝突、Bayの衝突時のサウンド
     [SerializeField] private AudioOncePlay gliderSpawnSound;
@@ -61,7 +64,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         // 初期セルをアクティブに変更
         Dictionary<int, Vector3Int[]> InitialCells = SetupInitialSpaceships();
         HashSet<Vector3Int> initialCells = ActivateGlidersWithId(InitialCells);
-        gliderSpawnSound.Play(); 
+        gliderSpawnSound.Play();
 
         currentGliderCells = initialCells;
 
@@ -81,11 +84,12 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         {
             beatClock.OnBeat.Subscribe(beat => OnBeatReceived(beat)).AddTo(this);
         }
-        
 
-        
 
-        // StartCoroutine(StepRoutine());
+        if (currentGliderCells.Count > 0 && beatAudioTrigger != null)
+        {
+            beatAudioTrigger.StartListening();
+        }
     }
 
     void InitializeGrid()
@@ -162,10 +166,25 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         HashSet<Vector3Int> activeGlider = ActivateGlidersWithId(gliderCellsWithId);
         HashSet<Vector3Int> activeBays = ActivateBaysWithId(BaysCellsWithId);
 
+        // 生きているセルを光らせて更新
         if (emissionController != null)
         {
             emissionController.TriggerCellEmission(activeGlider, SpaceshipType.Glider);
             emissionController.TriggerCellEmission(activeBays, SpaceshipType.Bays);
+        }
+
+        if (beatAudioTrigger != null)
+        {
+            if (currentGliderCells.Count == 0 && currentBaysCells.Count == 0)
+            {
+                // 両方空なら停止
+                beatAudioTrigger.StopListening();
+            }
+            else if (currentGliderCells.Count > 0 && !beatAudioTrigger.IsListening)
+            {
+                // グライダーがあり、まだ聞いていないなら開始
+                beatAudioTrigger.StartListening();
+            }
         }
 
         currentGliderCells = activeGlider;
