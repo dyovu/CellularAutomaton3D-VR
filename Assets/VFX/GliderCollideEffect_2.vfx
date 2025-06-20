@@ -31,7 +31,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d4c867f6b72b714dbb5fd1780afe208, type: 3}
-  m_Name: GliderCollideEffect_1
+  m_Name: GliderCollideEffect_2
   m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
@@ -62,7 +62,7 @@ VisualEffectResource:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GliderCollideEffect_1
+  m_Name: GliderCollideEffect_2
   m_Graph: {fileID: 114350483966674976}
   m_Infos:
     m_RendererSettings:
@@ -1731,7 +1731,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Gradient, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"colorKeys":[{"color":{"r":95.87451171875,"g":95.87451171875,"b":95.87451171875,"a":1.0},"time":0.0},{"color":{"r":0.0,"g":24.110305786132814,"b":32.0,"a":1.0},"time":0.027450980618596078},{"color":{"r":16.650362014770509,"g":0.0,"b":14.47099781036377,"a":1.0},"time":1.0}],"alphaKeys":[{"alpha":1.0,"time":0.0},{"alpha":0.800000011920929,"time":0.658823549747467},{"alpha":0.0,"time":1.0}],"gradientMode":0}'
+      m_SerializableObject: '{"colorKeys":[{"color":{"r":95.87451171875,"g":95.87451171875,"b":95.87451171875,"a":1.0},"time":0.0},{"color":{"r":31.034622192382814,"g":38.444908142089847,"b":0.0,"a":1.0},"time":0.027450980618596078},{"color":{"r":17.336244583129884,"g":6.6502885818481449,"b":0.0,"a":1.0},"time":1.0}],"alphaKeys":[{"alpha":1.0,"time":0.0},{"alpha":0.800000011920929,"time":0.658823549747467},{"alpha":0.0,"time":1.0}],"gradientMode":0}'
     m_Space: -1
   m_Property:
     name: Color
@@ -2035,7 +2035,7 @@ MonoBehaviour:
   - link:
     - context: {fileID: 8926484042661614947}
       slotIndex: 0
-  eventName: OnGliderCollide
+  eventName: OnBayCollide
 --- !u!114 &8926484042661614939
 MonoBehaviour:
   m_ObjectHideFlags: 0

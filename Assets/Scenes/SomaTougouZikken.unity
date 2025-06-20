@@ -5210,6 +5210,8 @@ MonoBehaviour:
   depth: 16
   stepInterval: 1.3
   animationDuration: 0.1
+  gliderCollideEffect: {fileID: 1971646464}
+  bayCollideEffect: {fileID: 211957376}
   initialSpaceships: []
 --- !u!4 &723256119
 Transform:
