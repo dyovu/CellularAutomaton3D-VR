@@ -14,25 +14,22 @@ namespace dyovu.Glider
         private int generation;
         private GliderPhase phase;
         private GliderDirection direction;
-        private Color GliderColor;
         private PlaneMode plane;
         private HashSet<int> Beat;
 
-        public Glider(int id, Vector3Int centerCell, GliderDirection direction, GliderPhase phase, Color color, PlaneMode plane, HashSet<int> beat = null)
+        public Glider(int id, Vector3Int centerCell, GliderDirection direction, GliderPhase phase, PlaneMode plane, HashSet<int> beat = null)
         {
             ID = id;
             generation = 0;
             this.phase = phase;
             this.centerCell = centerCell;
             this.direction = direction;
-            this.GliderColor = color;
             this.plane = plane;
             this.Beat = beat ?? new HashSet<int>(){4, 8, 12,16};
         }
 
         public int GetID() { return ID; }
         public Vector3Int CenterPosition { get { return centerCell; } }
-        public Color Color { get { return GliderColor; } set { GliderColor = value; } }
 
         public void UpdatePhase()
         {

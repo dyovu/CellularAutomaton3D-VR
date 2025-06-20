@@ -6,7 +6,12 @@ using System.Collections.Generic;
 
 public class BeatAudioTrigger : MonoBehaviour
 {
-    [SerializeField] private List<int> triggerBeats = new List<int> { 1, 5, 9, 13 }; // キックのタイミング
+    [SerializeField] private List<int> triggerBeats; // キックのタイミング
+
+    // 現在のbeatを受け取った数字で割った剰余が0なら反応するようにする
+    [SerializeField] private int beatDivisor; // 割る数
+    [SerializeField] private int remain; // 追加のトリガービート
+
     [SerializeField] private AudioClip audioClip;
     [SerializeField] private float volume = 1.0f;
     [SerializeField] private float pitch = 1.0f;
@@ -40,10 +45,11 @@ public class BeatAudioTrigger : MonoBehaviour
     public void Initialize(BeatClock clock)
     {
         clock.OnBeat
-            .Where(beat => triggerBeats.Contains(beat))
+            .Where(beat => triggerBeats.Contains(beat) || beat % beatDivisor == remain)
             .Subscribe(beat => ReactToBeat(beat))
             .AddTo(this);
     }
+
 
     private void ReactToBeat(int beat)
     {
@@ -55,6 +61,7 @@ public class BeatAudioTrigger : MonoBehaviour
     {
         if (_audioSource != null && audioClip != null)
         {
+            _audioSource.Stop();
             // ピッチの設定
             if (randomizePitch)
             {
@@ -69,7 +76,8 @@ public class BeatAudioTrigger : MonoBehaviour
             _audioSource.volume = volume;
 
             // 音声再生
-            _audioSource.PlayOneShot(audioClip);
+            _audioSource.clip = audioClip;
+            _audioSource.Play();
         }
         else
         {
