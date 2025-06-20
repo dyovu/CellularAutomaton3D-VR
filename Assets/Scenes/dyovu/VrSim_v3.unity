@@ -6276,10 +6276,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42cbae85451e542889fb75d8baa62fac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioClip: {fileID: 0}
+  audioClip: {fileID: 8300000, guid: f779c15128498459b8b3259f7d6b408e, type: 3}
   volume: 1
   pitch: 1
-  audioSource: {fileID: 0}
 --- !u!1 &889856304
 GameObject:
   m_ObjectHideFlags: 0
@@ -6381,10 +6380,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42cbae85451e542889fb75d8baa62fac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioClip: {fileID: 0}
+  audioClip: {fileID: 8300000, guid: 064bb8fef0b1b435f9e45c0637ae1972, type: 3}
   volume: 1
   pitch: 1
-  audioSource: {fileID: 0}
 --- !u!1 &902121603
 GameObject:
   m_ObjectHideFlags: 0
@@ -11799,10 +11797,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42cbae85451e542889fb75d8baa62fac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioClip: {fileID: 0}
+  audioClip: {fileID: 8300000, guid: d4be91cc78c394f0395e4f1f735e9669, type: 3}
   volume: 1
   pitch: 1
-  audioSource: {fileID: 0}
 --- !u!1 &1716388837
 GameObject:
   m_ObjectHideFlags: 0
