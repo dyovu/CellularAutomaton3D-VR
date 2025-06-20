@@ -5210,6 +5210,8 @@ MonoBehaviour:
   depth: 16
   stepInterval: 1.3
   animationDuration: 0.1
+  beatClock: {fileID: 6278888449858823506}
+  emissionController: {fileID: 1854649017}
   gliderCollideEffect: {fileID: 1971646464}
   bayCollideEffect: {fileID: 211957376}
   initialSpaceships: []
@@ -12499,6 +12501,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1854649016
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1854649018}
+  - component: {fileID: 1854649017}
+  m_Layer: 0
+  m_Name: CellEmissionController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1854649017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854649016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98ec6123710df42f094b9abc1f9ca60f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  emissionColor: {r: 1, g: 1, b: 1, a: 1}
+  emissionIntensity: 2
+  emissionDecaySpeed: 3
+--- !u!4 &1854649018
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854649016}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.5311847, y: 5.656905, z: -2.6626453}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1858090621 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 83685398960850492, guid: fbfc588a949bb1a42b20e5bddc4cf8cf, type: 3}
@@ -14247,6 +14296,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 917eb18ac98a9408f9692199fcd285b9, type: 3}
+--- !u!114 &6278888449858823506 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8480792687751917026, guid: 917eb18ac98a9408f9692199fcd285b9, type: 3}
+  m_PrefabInstance: {fileID: 6278888449858823505}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20595ef4b515c3140aaa65044c30533a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8984026414261384419
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14324,3 +14384,4 @@ SceneRoots:
   - {fileID: 1716388840}
   - {fileID: 1851824629}
   - {fileID: 577179254}
+  - {fileID: 1854649018}
