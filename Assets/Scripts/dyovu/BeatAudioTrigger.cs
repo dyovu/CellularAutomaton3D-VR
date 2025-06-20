@@ -50,6 +50,7 @@ public class BeatAudioTrigger : MonoBehaviour
             .AddTo(this);
     }
 
+
     private void ReactToBeat(int beat)
     {
         Debug.Log($"BeatAudioTrigger reacting to beat {beat}");
