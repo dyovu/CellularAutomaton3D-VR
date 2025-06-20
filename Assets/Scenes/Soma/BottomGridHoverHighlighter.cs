@@ -8,7 +8,7 @@ public class BottomGridHoverHighlighter : MonoBehaviour
     [SerializeField] private Transform highlightPrefab;
     [SerializeField] private RayInteractor rayInteractor;
     [SerializeField] private ToroidalBoundsCellularAutomaton automaton;
-    [SerializeField] private VisualEffect explosionPrefab; // ← PrefabをInspectorから渡す
+    [SerializeField] private VisualEffect explosionPrefab;
 
     private int gridSize;
     private Vector3Int lastGridPosition;
@@ -46,10 +46,8 @@ public class BottomGridHoverHighlighter : MonoBehaviour
         // 爆発VFXをインスタンス化
         VisualEffect explosion = Instantiate(explosionPrefab, worldPosition, Quaternion.identity);
 
-        // イベント送信
         explosion.SendEvent("OnPlayExplosion");
 
-        // 一定時間後に自動で破棄
         Destroy(explosion.gameObject, 3f);
     }
 
