@@ -5456,6 +5456,7 @@ MonoBehaviour:
   emissionController: {fileID: 1854649017}
   gliderColor: {r: 0.51686543, g: 0.9528302, b: 0.9141149, a: 1}
   baysColor: {r: 0.6631166, g: 0.31452474, b: 0.7169812, a: 1}
+  beatAudioTrigger: {fileID: 1068699869}
   gliderSpawnSound: {fileID: 1713757970}
   gliderCollideSound: {fileID: 889008890}
   bayCollideSound: {fileID: 895014838}
