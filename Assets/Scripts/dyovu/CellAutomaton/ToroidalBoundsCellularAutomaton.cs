@@ -21,6 +21,11 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
     [SerializeField] private BeatClock beatClock;
     [SerializeField] private CellEmissionController emissionController;
 
+    // GliderとBaysの色
+    [SerializeField] private Color gliderColor = new Color(169f / 255f, 169f / 255f, 169f / 255f);
+    [SerializeField] private Color baysColor = new Color(119f / 255f, 136f / 255f, 153f / 255f);
+
+    //VFXのフィールド
     [SerializeField] VisualEffect gliderCollideEffect;
     [SerializeField] VisualEffect bayCollideEffect;
     [System.Serializable]
@@ -56,17 +61,19 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         {
             emissionController.Initialize(GRID);
         }
+        emissionController.SetEmissionColor(gliderColor, baysColor);
 
         // 初期セルを光らせる
         if (emissionController != null)
         {
-            emissionController.TriggerCellEmission(initialCells);
+            emissionController.TriggerCellEmission(initialCells, SpaceshipType.Glider);
         }
 
         if (beatClock != null)
         {
             beatClock.OnBeat.Subscribe(beat => OnBeatReceived(beat)).AddTo(this);
         }
+        
 
         
 
@@ -104,22 +111,13 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         return initialCells;
     }
 
-    IEnumerator StepRoutine()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(stepInterval);
-            UpdateGeneration();
-        }
-    }
-
     void OnBeatReceived(int beat)
     {
-        UpdateGeneration();
-        // if (beat != null)
-        // {
-        //     UpdateGeneration();
-        // }
+
+        if (beat%2 != 0)
+        {
+            UpdateGeneration();
+        }
     }
 
     void UpdateGeneration()
@@ -158,8 +156,8 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
 
         if (emissionController != null)
         {
-            emissionController.TriggerCellEmission(activeGlider);
-            emissionController.TriggerCellEmission(activeBays);
+            emissionController.TriggerCellEmission(activeGlider, SpaceshipType.Glider);
+            emissionController.TriggerCellEmission(activeBays, SpaceshipType.Bays);
         }
 
         currentGliderCells = activeGlider;
@@ -192,7 +190,6 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         }
     }
 
-    
 
     private HashSet<Vector3Int> ActivateGlidersWithId(Dictionary<int, Vector3Int[]> cells)
     {
@@ -201,7 +198,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         {
             if (SpaceshipsManager.GetActiveGliders().ContainsKey(id))
             {
-                Color col = SpaceshipsManager.GetActiveGliders()[id].Color;
+                Color col = gliderColor;
                 foreach (Vector3Int position in cell)
                 {
                     if (GridUtils.IsInVisibleArea(position)) // 表示領域のみ追加
@@ -220,7 +217,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         HashSet<Vector3Int> activeCells = new HashSet<Vector3Int>();
         foreach (var (id, cell) in cells)
         {
-            Color col = Color.black;
+            Color col = baysColor;
             foreach (Vector3Int position in cell)
             {
                 if (GridUtils.IsInVisibleArea(position)) // 表示領域のみ追加
@@ -311,7 +308,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
                 effectInstance.SendEvent("OnGliderCollide");
                 Destroy(effectInstance.gameObject, 3f);
 
-                SpaceshipsManager.CreateBays(centerPosition, BaysDirection.Up);
+                SpaceshipsManager.CreateBays(centerPosition);
 
                 foreach (int id in gliderIDs)
                 {

@@ -23,11 +23,11 @@ public class SpaceshipsManager
     public Dictionary<int, Bays> GetActiveBays() => activeBays;
 
 
-    public (Vector3Int[], int) CreateGlider(Vector3Int centerCell, SpaceshipType type = SpaceshipType.Glider)
+    public (Vector3Int[], int) CreateGlider(Vector3Int centerCell)
     {
         PlaneMode planeMode = GetPlaneMode(centerCell);
-        GliderDirection direction = GetRandomDirection(); 
-        Glider newGlider = new Glider(nextGliderID, centerCell, direction, GliderPhase.Phase1, Color.blue, planeMode);
+        GliderDirection direction = GetRandomGliderDirection(); 
+        Glider newGlider = new Glider(nextGliderID, centerCell, direction, GliderPhase.Phase1, planeMode);
         activeGliders[nextGliderID] = newGlider;
         Vector3Int[] initialCells = newGlider.GetCurrentPhaseCells();
         nextGliderID++;
@@ -44,21 +44,25 @@ public class SpaceshipsManager
         return centerCell.y == 0 ? PlaneMode.XY : PlaneMode.XZ;
     }
 
-    private GliderDirection GetRandomDirection()
+    private GliderDirection GetRandomGliderDirection()
     {
         GliderDirection[] directions = (GliderDirection[])System.Enum.GetValues(typeof(GliderDirection));
         return directions[Random.Range(0, directions.Length)];
     }
 
-
-
-
-    public void CreateBays(Vector3Int forwardCell, BaysDirection direction)
+    public void CreateBays(Vector3Int forwardCell )
     {
+        BaysDirection direction = GetRandomBaysDirection();
         Bays newBays = new Bays(nextBaysID, forwardCell, direction);
         activeBays[nextBaysID] = newBays;
         nextBaysID++;
         Debug.Log($"Bays created with ID: {newBays.GetID()} at position {forwardCell} in direction {direction}");
+    }
+
+    private BaysDirection GetRandomBaysDirection()
+    {
+        BaysDirection[] directions = (BaysDirection[])System.Enum.GetValues(typeof(BaysDirection));
+        return directions[Random.Range(0, directions.Length)];
     }
     
 
@@ -143,20 +147,6 @@ public class SpaceshipsManager
             Collisions = collisions,
             IDToCells = idToCells
         };
-    }
-
-
-
-    void ChangeGliderColor(int id, Color newColor)
-    {
-        if (activeGliders.ContainsKey(id))
-        {
-            activeGliders[id].Color = newColor;
-        }
-        else
-        {
-            Debug.LogWarning($"Color cannot change, Glider with ID {id} does not exist.");
-        }
     }
 
     // 

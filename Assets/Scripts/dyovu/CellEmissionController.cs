@@ -1,14 +1,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static SpaceshipConstants;
 
 public class CellEmissionController : MonoBehaviour
-{
-    [SerializeField] private Color emissionColor = Color.white;
-    [SerializeField] private float emissionIntensity = 2.0f;
+{   
+    [SerializeField] private float emissionMaxIntensity = 1.0f;
+    [SerializeField] private float emissionIntensity = 0.1f;
     [SerializeField] private float emissionDecaySpeed = 3.0f;
+
+    // GliderとBaysの色をオートマトン側から取得する
+    // 一番下にSetEmissionColor()があるからそれで
+    private Color gliderColor = new Color(169, 169, 169);
+    private Color baysColor = new Color(119, 136, 153);
     
     private Dictionary<Vector3Int, float> cellEmissionLevels = new Dictionary<Vector3Int, float>();
+    private Dictionary<Vector3Int, Color> cellColors = new Dictionary<Vector3Int, Color>();
     private Dictionary<Vector3Int, GameObject> gridReference;
 
     public void Initialize(Dictionary<Vector3Int, GameObject> grid)
@@ -16,13 +23,15 @@ public class CellEmissionController : MonoBehaviour
         gridReference = grid;
     }
 
-    public void TriggerCellEmission(HashSet<Vector3Int> cells)
+    public void TriggerCellEmission(HashSet<Vector3Int> cells, SpaceshipType type)
     {
         foreach (var cell in cells)
         {
+            Color emissionColor = type == SpaceshipType.Glider ? gliderColor : baysColor;
             if (GridUtils.IsInVisibleArea(cell))
             {
                 cellEmissionLevels[cell] = emissionIntensity;
+                cellColors[cell] = emissionColor;
             }
         }
     }
@@ -43,6 +52,11 @@ public class CellEmissionController : MonoBehaviour
                 if (cellEmissionLevels[cell] <= 0)
                 {
                     cellEmissionLevels[cell] = 0;
+                    cellEmissionLevels.Remove(cell);  // 辞書から削除
+                                                      // マテリアルの発光も無効化
+                    cellColors.Remove(cell);
+                    UpdateCellEmission(cell, 0);
+                    continue;   
                 }
                 UpdateCellEmission(cell, cellEmissionLevels[cell]);
             }
@@ -57,18 +71,20 @@ public class CellEmissionController : MonoBehaviour
             if (renderer != null)
             {
                 Material material = renderer.material;
-                Color finalEmissionColor = emissionColor * emissionLevel;
+                Color baseColor = cellColors.ContainsKey(position) ? cellColors[position] : gliderColor;
+                Color finalEmissionColor = baseColor * emissionLevel;
+
                 material.SetColor("_EmissionColor", finalEmissionColor);
                 material.EnableKeyword("_EMISSION");
+                
             }
         }
     }
 
     // 設定用メソッド
-    public void SetEmissionParameters(Color color, float intensity, float decaySpeed)
+    public void SetEmissionColor(Color gliderColor, Color baysColor)
     {
-        emissionColor = color;
-        emissionIntensity = intensity;
-        emissionDecaySpeed = decaySpeed;
+        this.gliderColor = gliderColor;
+        this.baysColor = baysColor;
     }
 }
