@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UniRx;
-
+using UnityEngine.VFX;
 using static SpaceshipConstants;
 
 
@@ -21,7 +21,8 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
     [SerializeField] private BeatClock beatClock;
     [SerializeField] private CellEmissionController emissionController;
 
-    [SerializeField] private FireworkTest fireworkTest;
+    [SerializeField] VisualEffect gliderCollideEffect;
+    [SerializeField] VisualEffect bayCollideEffect;
     [System.Serializable]
     public struct InitialSpaceshipConfig
     {
@@ -302,10 +303,17 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
     {
         foreach (var collision in collisions)
         {
+            Vector3Int position = collision.Key;
+
+            // 
+            var effectInstance = Instantiate(bayCollideEffect, position, Quaternion.identity);
+            effectInstance.SendEvent("OnBayCollide");
+            Destroy(effectInstance.gameObject, 3f);
+
             List<int> BaysIDs = collision.Value;
             foreach (int id in BaysIDs)
             {
-                SpaceshipsManager.RemoveBays(id); // このメソッドをSpaceshipsManagerに追加が必要
+                SpaceshipsManager.RemoveBays(id);
                 idToCells.Remove(id);
             }
         }
@@ -313,30 +321,32 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
 
     void CreateBays(Dictionary<Vector3Int, List<int>> collisions)
     {
-        // 衝突に関わったグライダーIDを収集
         HashSet<int> processedGliders = new HashSet<int>();
-        
+
         foreach (var collision in collisions)
         {
             List<int> gliderIDs = collision.Value;
-            
-            // このグループの衝突がすでに処理済みかチェック
             bool alreadyProcessed = gliderIDs.Any(id => processedGliders.Contains(id));
-            
+
             if (!alreadyProcessed)
             {
-                // 衝突したセルの中心位置を計算
                 Vector3Int centerPosition = collision.Key;
+
+                // ★ ここで1回だけインスタンス化
+                var effectInstance = Instantiate(gliderCollideEffect, centerPosition, Quaternion.identity);
+                effectInstance.SendEvent("OnGliderCollide");
+                Destroy(effectInstance.gameObject, 3f);
+
                 SpaceshipsManager.CreateBays(centerPosition, BaysDirection.Up);
-                
-                // 処理済みとしてマーク
+
                 foreach (int id in gliderIDs)
                 {
-                    processedGliders.Add(id);
+                    processedGliders.Add(id); // これで次回以降は出さない
                 }
             }
         }
     }
+
 
 
     IEnumerator AnimateScale(GameObject obj, Vector3 from, Vector3 to, System.Action onComplete = null)
