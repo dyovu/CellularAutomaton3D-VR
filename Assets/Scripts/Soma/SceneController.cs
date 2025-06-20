@@ -31,6 +31,6 @@ public class SceneController : MonoBehaviour
 
     public void ChangeToMainScene()
     {
-        SceneManager.LoadScene("SomaTougouZikken");
+        SceneManager.LoadScene("VrSim_v3");
     }
 }
