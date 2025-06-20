@@ -25,6 +25,13 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
     [SerializeField] private Color gliderColor = new Color(169f / 255f, 169f / 255f, 169f / 255f);
     [SerializeField] private Color baysColor = new Color(119f / 255f, 136f / 255f, 153f / 255f);
 
+
+    // Gliderの生成、衝突、Bayの衝突時のサウンド
+    [SerializeField] private AudioOncePlay gliderSpawnSound;
+    [SerializeField] private AudioOncePlay gliderCollideSound;
+    [SerializeField] private AudioOncePlay bayCollideSound;
+    
+
     //VFXのフィールド
     [SerializeField] VisualEffect gliderCollideEffect;
     [SerializeField] VisualEffect bayCollideEffect;
@@ -54,6 +61,7 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         // 初期セルをアクティブに変更
         Dictionary<int, Vector3Int[]> InitialCells = SetupInitialSpaceships();
         HashSet<Vector3Int> initialCells = ActivateGlidersWithId(InitialCells);
+        gliderSpawnSound.Play(); 
 
         currentGliderCells = initialCells;
 
@@ -166,7 +174,8 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
 
     public void CreateNewGlider(Vector3Int CenterPosition)
     {
-        (Vector3Int[] initialCell, int id)  = SpaceshipsManager.CreateGlider(CenterPosition);
+        (Vector3Int[] initialCell, int id) = SpaceshipsManager.CreateGlider(CenterPosition);
+        gliderSpawnSound.Play();
     }
 
 
@@ -259,6 +268,9 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
 
     void RemoveCollidedGliders(Dictionary<Vector3Int, List<int>> collisions, Dictionary<int, Vector3Int[]> idToCells)
     {
+        
+        if (collisions.Count == 0) return;
+        gliderCollideSound.Play();
         foreach (var collision in collisions)
         {
             List<int> GliderIDs = collision.Value;
@@ -272,6 +284,8 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
 
     void RemoveCollidedBays(Dictionary<Vector3Int, List<int>> collisions, Dictionary<int, Vector3Int[]> idToCells)
     {
+        if (collisions.Count == 0) return;
+        bayCollideSound.Play();
         foreach (var collision in collisions)
         {
             Vector3Int position = collision.Key;

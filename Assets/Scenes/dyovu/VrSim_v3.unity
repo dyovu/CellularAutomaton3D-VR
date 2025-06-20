@@ -5214,6 +5214,9 @@ MonoBehaviour:
   emissionController: {fileID: 1854649017}
   gliderColor: {r: 0.51686543, g: 0.9528302, b: 0.9141149, a: 1}
   baysColor: {r: 0.6631166, g: 0.31452474, b: 0.7169812, a: 1}
+  gliderSpawnSound: {fileID: 1713757970}
+  gliderCollideSound: {fileID: 889008890}
+  bayCollideSound: {fileID: 895014838}
   gliderCollideEffect: {fileID: 1971646464}
   bayCollideEffect: {fileID: 211957376}
   initialSpaceships: []
@@ -6229,6 +6232,54 @@ Transform:
   - {fileID: 1943133643}
   m_Father: {fileID: 1097076962}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &889008888
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 889008889}
+  - component: {fileID: 889008890}
+  m_Layer: 0
+  m_Name: GliderCollisionSound
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &889008889
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889008888}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2051840783}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &889008890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889008888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42cbae85451e542889fb75d8baa62fac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 0}
+  volume: 1
+  pitch: 1
+  audioSource: {fileID: 0}
 --- !u!1 &889856304
 GameObject:
   m_ObjectHideFlags: 0
@@ -6286,6 +6337,54 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &895014836
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 895014837}
+  - component: {fileID: 895014838}
+  m_Layer: 0
+  m_Name: BaysCollisionSound
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &895014837
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 895014836}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2051840783}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &895014838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 895014836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42cbae85451e542889fb75d8baa62fac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 0}
+  volume: 1
+  pitch: 1
+  audioSource: {fileID: 0}
 --- !u!1 &902121603
 GameObject:
   m_ObjectHideFlags: 0
@@ -11558,7 +11657,7 @@ MonoBehaviour:
   triggerBeats: 
   beatDivisor: 2
   remain: 1
-  audioClip: {fileID: 8300000, guid: aa29183301f894df58a1a8f65e1dbacb, type: 3}
+  audioClip: {fileID: 8300000, guid: 9eda019f96d54e7408861d85049be12c, type: 3}
   volume: 1
   pitch: 1
   randomizePitch: 0
@@ -11656,6 +11755,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 524775614}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1713757968
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1713757969}
+  - component: {fileID: 1713757970}
+  m_Layer: 0
+  m_Name: GliderSpawnSound
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1713757969
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1713757968}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2051840783}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1713757970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1713757968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42cbae85451e542889fb75d8baa62fac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 0}
+  volume: 1
+  pitch: 1
+  audioSource: {fileID: 0}
 --- !u!1 &1716388837
 GameObject:
   m_ObjectHideFlags: 0
@@ -12688,9 +12835,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98ec6123710df42f094b9abc1f9ca60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  emissionMaxIntensity: 1
   emissionIntensity: 0.5
-  emissionDecaySpeed: 1
+  emissionDecaySpeed: 0.6
 --- !u!4 &1854649018
 Transform:
   m_ObjectHideFlags: 0
@@ -13944,6 +14090,9 @@ Transform:
   - {fileID: 931316031}
   - {fileID: 1068699868}
   - {fileID: 1664843223}
+  - {fileID: 1713757969}
+  - {fileID: 889008889}
+  - {fileID: 895014837}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2061509728
