@@ -135,7 +135,6 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         Dictionary<int, Vector3Int[]> gliderCellsWithId = gliderInfo.IDToCells;
 
         // 衝突したグライダー削除し、ベイを作成
-        // TriggerVFX(gliderCollisions);
         RemoveCollidedGliders(gliderCollisions, gliderCellsWithId);
         Debug.Log($"Collisions found: {gliderCollisions.Count}");
         CreateBays(gliderCollisions);
@@ -258,31 +257,6 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         }
     }
 
-    void TriggerVFX(Dictionary<Vector3Int, List<int>> collisions)
-    {
-        foreach (var collision in collisions)
-        {
-            List<int> GliderIDs = collision.Value;
-            foreach (int id in GliderIDs)
-            {
-                OnTrigerFirework(SpaceshipsManager.GetActiveGliders()[id].CenterPosition);
-                break; // 一つの衝突で一回だけ発火
-            }
-        }
-    }
-
-    void OnTrigerFirework(Vector3Int position)
-    {
-        Debug.Log($"OnTrigerFirework : Triggering firework at position: {position}");
-        if (fireworkTest != null)
-        {
-            fireworkTest.TriggerExplosion(position);
-        }
-        else
-        {
-            Debug.LogWarning("FireworkTest is not assigned.");
-        }
-    }
 
 
 
