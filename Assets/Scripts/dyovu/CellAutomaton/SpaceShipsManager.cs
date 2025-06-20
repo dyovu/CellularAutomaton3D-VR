@@ -50,7 +50,7 @@ public class SpaceshipsManager
         return directions[Random.Range(0, directions.Length)];
     }
 
-    public void CreateBays(Vector3Int forwardCell )
+    public void CreateBays(Vector3Int forwardCell)
     {
         BaysDirection direction = GetRandomBaysDirection();
         Bays newBays = new Bays(nextBaysID, forwardCell, direction);

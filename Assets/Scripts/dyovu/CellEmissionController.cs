@@ -5,9 +5,8 @@ using static SpaceshipConstants;
 
 public class CellEmissionController : MonoBehaviour
 {   
-    [SerializeField] private float emissionMaxIntensity = 1.0f;
-    [SerializeField] private float emissionIntensity = 0.1f;
-    [SerializeField] private float emissionDecaySpeed = 3.0f;
+    [SerializeField] private float emissionIntensity = 0.5f;
+    [SerializeField] private float emissionDecaySpeed = 0.6f;
 
     // GliderとBaysの色をオートマトン側から取得する
     // 一番下にSetEmissionColor()があるからそれで
