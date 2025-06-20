@@ -13,7 +13,7 @@ public class CameraScaleChanger : MonoBehaviour
     public void OnHover()
     {
         _material.EnableKeyword("_EMISSION");
-        _material.SetColor("_EmissionColor", Color.white * 1.0f);
+        _material.SetColor("_EmissionColor", Color.white * 0.1f);
     }
 
     public void OnUnhover()
