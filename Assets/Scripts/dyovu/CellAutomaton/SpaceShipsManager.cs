@@ -50,12 +50,6 @@ public class SpaceshipsManager
         return directions[Random.Range(0, directions.Length)];
     }
 
-    // private GliderPhase GetRandomPhase()
-    // {
-    //     GliderPhase[] phases = (GliderPhase[])System.Enum.GetValues(typeof(GliderPhase));
-    //     return phases[Random.Range(0, phases.Length)];
-        
-    // }
 
 
 

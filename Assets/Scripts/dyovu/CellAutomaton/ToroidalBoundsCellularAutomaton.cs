@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UniRx;
 
 using static SpaceshipConstants;
 
@@ -15,6 +16,12 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
     [SerializeField] int depth = 30;
     [SerializeField] float stepInterval = 1.3f;
     [SerializeField] float animationDuration = 0.1f;
+
+    // セルを光らせる部分のフィールド
+    [SerializeField] private BeatClock beatClock;
+    [SerializeField] private CellEmissionController emissionController;
+
+    [SerializeField] private FireworkTest fireworkTest;
     [System.Serializable]
     public struct InitialSpaceshipConfig
     {
@@ -40,10 +47,29 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         InitializeGrid();
         // 初期セルをアクティブに変更
         Dictionary<int, Vector3Int[]> InitialCells = SetupInitialSpaceships();
-        HashSet<Vector3Int>initialCells = ActivateGlidersWithId(InitialCells);
+        HashSet<Vector3Int> initialCells = ActivateGlidersWithId(InitialCells);
+
         currentGliderCells = initialCells;
 
-        StartCoroutine(StepRoutine());
+        if (emissionController != null)
+        {
+            emissionController.Initialize(GRID);
+        }
+
+        // 初期セルを光らせる
+        if (emissionController != null)
+        {
+            emissionController.TriggerCellEmission(initialCells);
+        }
+
+        if (beatClock != null)
+        {
+            beatClock.OnBeat.Subscribe(beat => OnBeatReceived(beat)).AddTo(this);
+        }
+
+        
+
+        // StartCoroutine(StepRoutine());
     }
 
     void InitializeGrid()
@@ -86,6 +112,15 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         }
     }
 
+    void OnBeatReceived(int beat)
+    {
+        UpdateGeneration();
+        // if (beat != null)
+        // {
+        //     UpdateGeneration();
+        // }
+    }
+
     void UpdateGeneration()
     {
         // 現在のセルを非アクティブに
@@ -99,9 +134,15 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         Dictionary<int, Vector3Int[]> gliderCellsWithId = gliderInfo.IDToCells;
 
         // 衝突したグライダー削除し、ベイを作成
+        // TriggerVFX(gliderCollisions);
         RemoveCollidedGliders(gliderCollisions, gliderCellsWithId);
         Debug.Log($"Collisions found: {gliderCollisions.Count}");
         CreateBays(gliderCollisions);
+
+        /*
+        *  
+        *
+        */
 
         // 次世代のbaysの位置と衝突しているグライダーの座標を取得
         BaysInfo baysInfo = SpaceshipsManager.GetBaysInfo();
@@ -112,10 +153,14 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         // 衝突したベイ削除し、ベイを作成
         RemoveCollidedBays(baysCollisions, BaysCellsWithId);
 
-
         HashSet<Vector3Int> activeGlider = ActivateGlidersWithId(gliderCellsWithId);
         HashSet<Vector3Int> activeBays = ActivateBaysWithId(BaysCellsWithId);
 
+        if (emissionController != null)
+        {
+            emissionController.TriggerCellEmission(activeGlider);
+            emissionController.TriggerCellEmission(activeBays);
+        }
 
         currentGliderCells = activeGlider;
         currentBaysCells = activeBays;
@@ -212,27 +257,32 @@ public partial class ToroidalBoundsCellularAutomaton : MonoBehaviour
         }
     }
 
-    void ActivateCells(HashSet<Vector3Int> cells)
+    void TriggerVFX(Dictionary<Vector3Int, List<int>> collisions)
     {
-        foreach (var cell in cells)
+        foreach (var collision in collisions)
         {
-            if (GRID.TryGetValue(cell, out GameObject cube))
+            List<int> GliderIDs = collision.Value;
+            foreach (int id in GliderIDs)
             {
-                cube.SetActive(true);
-                // 色を白に設定
-                Renderer renderer = cube.GetComponent<Renderer>();
-                if (renderer != null)
-                {
-                    renderer.material.color = Color.white;
-                }
-                StartCoroutine(AnimateScale(cube, Vector3.zero, Vector3.one));
+                OnTrigerFirework(SpaceshipsManager.GetActiveGliders()[id].CenterPosition);
+                break; // 一つの衝突で一回だけ発火
             }
         }
-        // 表示領域のセルのみ追跡
-        currentGliderCells = cells.Where(cell => GridUtils.IsInVisibleArea(cell)).ToHashSet();
     }
 
-    
+    void OnTrigerFirework(Vector3Int position)
+    {
+        Debug.Log($"OnTrigerFirework : Triggering firework at position: {position}");
+        if (fireworkTest != null)
+        {
+            fireworkTest.TriggerExplosion(position);
+        }
+        else
+        {
+            Debug.LogWarning("FireworkTest is not assigned.");
+        }
+    }
+
 
 
     void RemoveCollidedGliders(Dictionary<Vector3Int, List<int>> collisions, Dictionary<int, Vector3Int[]> idToCells)
