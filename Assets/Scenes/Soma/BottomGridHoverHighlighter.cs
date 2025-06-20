@@ -1,5 +1,6 @@
 using UnityEngine;
 using Oculus.Interaction;
+using UnityEngine.VFX;
 
 public class BottomGridHoverHighlighter : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class BottomGridHoverHighlighter : MonoBehaviour
     [SerializeField] private Transform highlightPrefab;
     [SerializeField] private RayInteractor rayInteractor;
     [SerializeField] private ToroidalBoundsCellularAutomaton automaton;
+    [SerializeField] private VisualEffect explosionPrefab; // ← PrefabをInspectorから渡す
 
     private int gridSize;
     private Vector3Int lastGridPosition;
@@ -33,6 +35,22 @@ public class BottomGridHoverHighlighter : MonoBehaviour
     public void OnSelect()
     {
         automaton.CreateNewGlider(lastGridPosition);
+
+        // ワールド座標に変換（TransformPointでローカル→ワールドに変換）
+        Vector3 worldPosition = cubePlane.TransformPoint(new Vector3(
+            (lastGridPosition.x + 0.5f) / gridSize - 0.5f,
+            0.0f,
+            (lastGridPosition.z + 0.5f) / gridSize - 0.5f
+        ));
+
+        // 爆発VFXをインスタンス化
+        VisualEffect explosion = Instantiate(explosionPrefab, worldPosition, Quaternion.identity);
+
+        // イベント送信
+        explosion.SendEvent("OnPlayExplosion");
+
+        // 一定時間後に自動で破棄
+        Destroy(explosion.gameObject, 3f);
     }
 
     private void Update()
